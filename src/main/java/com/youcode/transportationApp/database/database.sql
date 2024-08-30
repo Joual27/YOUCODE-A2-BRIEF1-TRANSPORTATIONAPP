@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS contracts (
     specialRate DOUBLE PRECISION,
     agreementConditions VARCHAR(255),
     renewable BOOLEAN,
-    contractStatus contract_status,
+    contractStatus contract_status
 );
 
 CREATE TYPE offer_status as ENUM ('ACTIVE' , 'SUSPENDED' , 'EXPIRED');

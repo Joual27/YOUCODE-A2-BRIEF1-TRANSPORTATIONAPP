@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.youcode.transportationApp.database.DbConnection;
+import com.youcode.transportationApp.ui.Menu;
 
 
 
@@ -12,10 +13,10 @@ public class Main{
        try{
          DbConnection dbConnection = DbConnection.getInstance();
          Connection cnx = dbConnection.getConnection();
-
-
          if( cnx != null && !cnx.isClosed()){
             System.out.println("Connected to db succesfully !");
+            Menu menu = new Menu();
+            menu.startMenu();
          }
          else{
             System.out.println("unable to connect to db !");

@@ -13,7 +13,6 @@ public class Ticket {
     private Timestamp soldAt;
     private TicketStatus ticketStatus;
 
-    // Getters and Setters
     public String getTicketId() {
         return ticketId;
     }
