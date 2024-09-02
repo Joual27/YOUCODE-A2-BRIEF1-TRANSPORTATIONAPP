@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import com.youcode.transportationApp.partners.interfaces.PartnerServiceI;
 import com.youcode.transportationApp.ui.MenuI;
+import java.sql.SQLException;
 
 public class PartnerMenu implements MenuI{
     
@@ -58,6 +59,19 @@ public class PartnerMenu implements MenuI{
         switch (choice) {
             case 1:
                 partnerService.fetchAllPartners();
+                break;
+            case 2:
+                partnerService.addPartner();
+                break;
+            case 3 :
+                try {
+                    partnerService.updatePartner();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println("An error occurred while updating the partner.");
+                }
+            case 4 :
+                partnerService.deletePartner();
                 break;
             default:
                 break;

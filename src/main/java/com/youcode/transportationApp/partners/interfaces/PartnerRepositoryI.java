@@ -1,18 +1,18 @@
 package com.youcode.transportationApp.partners.interfaces;
 
 import java.util.ArrayList;
-
+import java.sql.SQLException;
 import com.youcode.transportationApp.partners.Partner;
 
 public interface PartnerRepositoryI {
 
     public ArrayList<Partner> getAllPartners();
 
-    // public Partner createPartner(Partner partner);
+    public Partner getPartnerById(String partnerId) throws SQLException;    
 
-    // public Partner editPartner(Partner partner);
+    public void createPartner(Partner partner) throws SQLException;
 
-    // public Partner getPartnerById(String partnerId);
+    public void editPartner(Partner partner) throws SQLException;
 
-    // public Partner removePartner(String partnerId);
+    public void removePartner(String partnerId);
 }

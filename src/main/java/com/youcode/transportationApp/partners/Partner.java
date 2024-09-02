@@ -19,6 +19,11 @@ public class Partner {
     private ArrayList<Contract> contracts;
 
 
+    public Partner () {
+        
+    }
+
+
     public Partner(String partnerId, String companyName, String commercialContact, 
                    TransportationType transportationType, String geographicZone, 
                    String specialConditions, PartnershipStatus partnershipStatus, 
@@ -32,8 +37,7 @@ public class Partner {
             this.specialConditions = specialConditions;
             this.partnershipStatus = partnershipStatus;
             this.creationDate = creationDate;
-
-        }
+    }
     
     
     public String getPartnerId() {
