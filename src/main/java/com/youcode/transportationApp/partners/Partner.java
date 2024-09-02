@@ -1,9 +1,11 @@
-package com.youcode.transportationApp.entities;
+package com.youcode.transportationApp.partners;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
-import com.youcode.transportationApp.entities.enums.PartnershipStatus;
-import com.youcode.transportationApp.entities.enums.TransportationType;
+import com.youcode.transportationApp.contracts.Contract;
+import com.youcode.transportationApp.enums.PartnershipStatus;
+import com.youcode.transportationApp.enums.TransportationType;
 
 public class Partner {
     private String partnerId;
@@ -14,8 +16,26 @@ public class Partner {
     private String specialConditions;
     private PartnershipStatus partnershipStatus;
     private Timestamp creationDate;
+    private ArrayList<Contract> contracts;
 
-    // Getters and Setters
+
+    public Partner(String partnerId, String companyName, String commercialContact, 
+                   TransportationType transportationType, String geographicZone, 
+                   String specialConditions, PartnershipStatus partnershipStatus, 
+                   Timestamp creationDate) {
+
+            this.partnerId = partnerId;
+            this.companyName = companyName;
+            this.commercialContact = commercialContact;
+            this.transportationType = transportationType;
+            this.geographicZone = geographicZone;
+            this.specialConditions = specialConditions;
+            this.partnershipStatus = partnershipStatus;
+            this.creationDate = creationDate;
+
+        }
+    
+    
     public String getPartnerId() {
         return partnerId;
     }
@@ -79,4 +99,13 @@ public class Partner {
     public void setCreationDate(Timestamp creationDate) {
         this.creationDate = creationDate;
     }
+
+    public ArrayList<Contract> geContracts(){
+        return this.contracts;
+    }
+
+    public void setContracts(ArrayList<Contract> contracts){
+        this.contracts = contracts;
+    }
+
 }

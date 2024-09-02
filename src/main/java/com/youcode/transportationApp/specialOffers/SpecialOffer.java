@@ -1,9 +1,10 @@
-package com.youcode.transportationApp.entities;
+package com.youcode.transportationApp.specialOffers;
 
 import java.sql.Timestamp;
 
-import com.youcode.transportationApp.entities.enums.DiscountType;
-import com.youcode.transportationApp.entities.enums.OfferStatus;
+import com.youcode.transportationApp.contracts.Contract;
+import com.youcode.transportationApp.enums.DiscountType;
+import com.youcode.transportationApp.enums.OfferStatus;
 
 public class SpecialOffer {
     private String offerId;
@@ -15,8 +16,10 @@ public class SpecialOffer {
     private double discountValue;
     private String conditions;
     private OfferStatus offerStatus;
+    private Contract belongsToContract;
+    
 
-    // Getters and Setters
+    
     public String getOfferId() {
         return offerId;
     }

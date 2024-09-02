@@ -1,9 +1,10 @@
-package com.youcode.transportationApp.entities;
+package com.youcode.transportationApp.tickets;
 
 import java.sql.Timestamp;
 
-import com.youcode.transportationApp.entities.enums.TicketStatus;
-import com.youcode.transportationApp.entities.enums.TransportationType;
+import com.youcode.transportationApp.contracts.Contract;
+import com.youcode.transportationApp.enums.TicketStatus;
+import com.youcode.transportationApp.enums.TransportationType;
 
 public class Ticket {
     private String ticketId;
@@ -12,6 +13,7 @@ public class Ticket {
     private double sellingPrice;
     private Timestamp soldAt;
     private TicketStatus ticketStatus;
+    private Contract belongsToContract;
 
     public String getTicketId() {
         return ticketId;

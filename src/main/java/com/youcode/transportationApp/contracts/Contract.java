@@ -1,8 +1,12 @@
-package com.youcode.transportationApp.entities;
+package com.youcode.transportationApp.contracts;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
-import com.youcode.transportationApp.entities.enums.ContractStatus;
+import com.youcode.transportationApp.enums.ContractStatus;
+import com.youcode.transportationApp.partners.Partner;
+import com.youcode.transportationApp.specialOffers.SpecialOffer;
+import com.youcode.transportationApp.tickets.Ticket;
 
 public class Contract {
     private String contractId;
@@ -12,8 +16,11 @@ public class Contract {
     private String agreementConditions;
     private boolean renewable;
     private ContractStatus contractStatus;
+    private ArrayList<Ticket> tickets;
+    private ArrayList<SpecialOffer> offers;
+    private Partner partner;
 
-    // Getters and Setters
+    
     public String getContractId() {
         return contractId;
     }
@@ -69,4 +76,30 @@ public class Contract {
     public void setContractStatus(ContractStatus contractStatus) {
         this.contractStatus = contractStatus;
     }
+
+    public ArrayList<Ticket> getTickets(){
+        return this.tickets;
+    }
+
+    public void setTickets(ArrayList<Ticket> tickets){
+        this.tickets = tickets;
+    }
+
+    public ArrayList<SpecialOffer> getOffers(){
+        return this.offers;
+    }
+
+    public void setOffers(ArrayList<SpecialOffer> offers){
+        this.offers = offers;
+    }
+
+
+    public Partner getPartner(){
+        return this.partner;
+    }
+
+    public void setPartner(Partner partner){
+        this.partner = partner;
+    }
+
 }

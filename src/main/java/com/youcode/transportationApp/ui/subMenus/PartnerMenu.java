@@ -2,17 +2,22 @@ package com.youcode.transportationApp.ui.subMenus;
 
 import java.util.Scanner;
 
+import com.youcode.transportationApp.partners.interfaces.PartnerServiceI;
 import com.youcode.transportationApp.ui.MenuI;
 
 public class PartnerMenu implements MenuI{
     
     private Scanner scanner;
+    private PartnerServiceI partnerService;
 
-    public PartnerMenu(){
+    public PartnerMenu(PartnerServiceI partnerService){
         scanner = new Scanner(System.in);
+        this.partnerService = partnerService;
     }
 
+
     
+    @Override
     public void displayMenu(){
         System.out.println("========= Handle Partners =========");
         System.out.println("1. Fetch All Partners");
@@ -24,6 +29,7 @@ public class PartnerMenu implements MenuI{
 
 
 
+    @Override
     public int getMenuChoice(){
 
         int choice = -1;
@@ -47,10 +53,11 @@ public class PartnerMenu implements MenuI{
     }
 
 
+    @Override
     public void handleChoice(int choice){
         switch (choice) {
             case 1:
-                System.out.println("========= LIst Of All Partners =========");
+                partnerService.fetchAllPartners();
                 break;
             default:
                 break;
@@ -58,6 +65,7 @@ public class PartnerMenu implements MenuI{
     }
 
 
+    @Override
     public void startMenu(){
         int choice ;
 

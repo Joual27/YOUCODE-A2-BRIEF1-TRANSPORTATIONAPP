@@ -1,4 +1,4 @@
-package com.youcode.transportationApp.entities.enums;
+package com.youcode.transportationApp.enums;
 
 public enum DiscountType {
     FIX_AMOUNT,

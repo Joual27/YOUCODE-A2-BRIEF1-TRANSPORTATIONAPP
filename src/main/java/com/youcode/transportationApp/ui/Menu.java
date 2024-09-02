@@ -1,7 +1,12 @@
 package com.youcode.transportationApp.ui;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 
+import com.youcode.transportationApp.partners.PartnerRepository;
+import com.youcode.transportationApp.partners.PartnerService;
+import com.youcode.transportationApp.partners.interfaces.PartnerRepositoryI;
+import com.youcode.transportationApp.partners.interfaces.PartnerServiceI;
 import com.youcode.transportationApp.ui.subMenus.PartnerMenu;
 
 public class Menu implements MenuI{
@@ -11,10 +16,18 @@ public class Menu implements MenuI{
 
     public Menu (){
         this.scanner = new Scanner(System.in);
-        this.partnerMenu = new PartnerMenu();
+        try{
+            PartnerRepositoryI partnerRepository = new PartnerRepository();
+            PartnerServiceI partnerService = new PartnerService(partnerRepository);
+            this.partnerMenu = new PartnerMenu(partnerService);
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+        }
     }
 
-    
+
+    @Override
     public void displayMenu(){
         System.out.println("========= Main Menu =========");
         System.out.println("1. Handle Partners");
@@ -26,6 +39,7 @@ public class Menu implements MenuI{
     }
 
 
+    @Override
     public int getMenuChoice(){
           int choice = -1 ;
 
@@ -47,6 +61,7 @@ public class Menu implements MenuI{
           return choice ;
     }
 
+    @Override
     public void handleChoice(int choice ){
         switch (choice) {
             case 1:
@@ -70,6 +85,7 @@ public class Menu implements MenuI{
     }
 
 
+    @Override
     public void startMenu(){
         int choice;
         do{

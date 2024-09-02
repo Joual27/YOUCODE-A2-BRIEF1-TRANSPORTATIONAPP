@@ -48,4 +48,4 @@ CREATE TABLE IF NOT EXISTS tickets (
     sellingPrice DOUBLE PRECISION,
     soldAt TIMESTAMP,
     ticketStatus ticket_status
-);
+);  

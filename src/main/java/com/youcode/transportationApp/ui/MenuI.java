@@ -1,8 +1,7 @@
 package com.youcode.transportationApp.ui;
 
- /**
-  * SubMenuI
-  */
+
+
 public interface MenuI {
   
     public void displayMenu();
