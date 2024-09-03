@@ -1,43 +1,41 @@
 package com.youcode.transportationApp.ui.subMenus;
 
+import com.youcode.transportationApp.contracts.interfaces.ContractServiceI;
+import com.youcode.transportationApp.ui.MenuI;
+
+import java.sql.SQLException;
 import java.util.Scanner;
 
-import com.youcode.transportationApp.partners.interfaces.PartnerServiceI;
-import com.youcode.transportationApp.ui.MenuI;
-import java.sql.SQLException;
-
-public class PartnerMenu implements MenuI{
+public class ContractMenu implements MenuI{
     
-    private Scanner scanner;
-    private PartnerServiceI partnerService;
+    private Scanner sc;
+    private final ContractServiceI contractService;
 
-    public PartnerMenu(PartnerServiceI partnerService){
-        scanner = new Scanner(System.in);
-        this.partnerService = partnerService;
+    public ContractMenu(ContractServiceI contractService){
+        sc = new Scanner(System.in);
+        this.contractService = contractService;
     }
 
 
-    
     @Override
     public void displayMenu(){
-        System.out.println("========= Handle Partners =========");
-        System.out.println("1. Fetch All Partners");
-        System.out.println("2. Add Partner");
-        System.out.println("3. Update Partner Data");
-        System.out.println("4. delete Partner");
+        System.out.println("========= Handle Contracts =========");
+        System.out.println("1. Fetch All Contracts");
+        System.out.println("2. Add Contract");
+        System.out.println("3. Update Contract Data");
+        System.out.println("4. delete Contract");
         System.out.println("5. Back to main menu");
     }
 
-
-
+    
     @Override
     public int getMenuChoice(){
 
         int choice = -1;
         
         while (choice < 1 || choice > 5 ){
-            if(scanner.hasNextInt()){
-                choice = scanner.nextInt();
+            if(sc.hasNextInt()){
+                choice = sc.nextInt();
 
                 if(choice < 1 || choice > 5){
                     System.out.println("Invalid choice ,PLease enter a number between 1 and 5 ");
@@ -46,38 +44,38 @@ public class PartnerMenu implements MenuI{
             }
             else{
                 System.out.println("PLease enter a number");
-                scanner.next();
+                sc.next();
             }
         }
 
         return choice;
     }
 
-
-    @Override
     public void handleChoice(int choice){
         switch (choice) {
             case 1:
-                partnerService.fetchAllPartners();
+                contractService.fetchAllContracts();
                 break;
-            case 2:
-                partnerService.addPartner();
-                break;
-            case 3 :
+            case 2 :
+                try{
+                    contractService.addContract();  
+                }      
+                catch(SQLException e){
+                    e.printStackTrace();
+                }
+            case 3:
                 try {
-                    partnerService.updatePartner();
+                    contractService.updateContract();    
+                    
                 } catch (SQLException e) {
                     e.printStackTrace();
-                    System.out.println("An error occurred while updating the partner.");
                 }
-            case 4 :
-                partnerService.deletePartner();
-                break;
+            case 4:
+                contractService.deleteContract();    
             default:
                 break;
         }
     }
-
 
     @Override
     public void startMenu(){
@@ -89,5 +87,4 @@ public class PartnerMenu implements MenuI{
            handleChoice(choice);
         }while(choice != 5);
     }
-    
 }

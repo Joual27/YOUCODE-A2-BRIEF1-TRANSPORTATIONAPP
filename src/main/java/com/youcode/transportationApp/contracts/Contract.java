@@ -2,6 +2,7 @@ package com.youcode.transportationApp.contracts;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.time.LocalDate;
 
 import com.youcode.transportationApp.enums.ContractStatus;
 import com.youcode.transportationApp.partners.Partner;
@@ -10,8 +11,8 @@ import com.youcode.transportationApp.tickets.Ticket;
 
 public class Contract {
     private String contractId;
-    private Timestamp startingDate;
-    private Timestamp endDate;
+    private LocalDate startingDate;
+    private LocalDate endDate;
     private double specialRate;
     private String agreementConditions;
     private boolean renewable;
@@ -20,7 +21,20 @@ public class Contract {
     private ArrayList<SpecialOffer> offers;
     private Partner partner;
 
-    
+    public Contract (){};
+
+    public Contract(String contractId, LocalDate startingDate, LocalDate endDate, double specialRate, 
+                    String agreementConditions, boolean renewable, ContractStatus contractStatus, Partner partner) {
+            this.contractId = contractId;
+            this.startingDate = startingDate;
+            this.endDate = endDate;
+            this.specialRate = specialRate;
+            this.agreementConditions = agreementConditions;
+            this.renewable = renewable;
+            this.contractStatus = contractStatus;
+            this.partner = partner;
+        }
+
     public String getContractId() {
         return contractId;
     }
@@ -29,19 +43,19 @@ public class Contract {
         this.contractId = contractId;
     }
 
-    public Timestamp getStartingDate() {
+    public LocalDate getStartingDate() {
         return startingDate;
     }
 
-    public void setStartingDate(Timestamp startingDate) {
+    public void setStartingDate(LocalDate startingDate) {
         this.startingDate = startingDate;
     }
 
-    public Timestamp getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Timestamp endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

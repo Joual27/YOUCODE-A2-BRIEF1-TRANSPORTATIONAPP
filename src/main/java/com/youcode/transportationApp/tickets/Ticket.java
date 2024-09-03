@@ -15,6 +15,9 @@ public class Ticket {
     private TicketStatus ticketStatus;
     private Contract belongsToContract;
 
+
+    public Ticket(){};
+
     public String getTicketId() {
         return ticketId;
     }
@@ -63,3 +66,7 @@ public class Ticket {
         this.ticketStatus = ticketStatus;
     }
 }
+
+
+
+

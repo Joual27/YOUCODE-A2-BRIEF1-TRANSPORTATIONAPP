@@ -108,10 +108,6 @@ public class PartnerRepository implements PartnerRepositoryI{
     }
 
 
-    // @Override
-    // public Partner getPartnerById(String partnerId){
-
-    // }5b9bb2da-8bbe-4764-8da0-6cc22ebb156a
 
     @Override
     public void removePartner(String partnerId){

@@ -3,16 +3,22 @@ package com.youcode.transportationApp.ui;
 import java.sql.SQLException;
 import java.util.Scanner;
 
+import com.youcode.transportationApp.contracts.interfaces.ContractRepositoryI;
+import com.youcode.transportationApp.contracts.interfaces.ContractServiceI;
+import com.youcode.transportationApp.contracts.ContractRepository;
+import com.youcode.transportationApp.contracts.ContractService;
 import com.youcode.transportationApp.partners.PartnerRepository;
 import com.youcode.transportationApp.partners.PartnerService;
 import com.youcode.transportationApp.partners.interfaces.PartnerRepositoryI;
 import com.youcode.transportationApp.partners.interfaces.PartnerServiceI;
+import com.youcode.transportationApp.ui.subMenus.ContractMenu;
 import com.youcode.transportationApp.ui.subMenus.PartnerMenu;
 
 public class Menu implements MenuI{
     
     private Scanner scanner;
     private PartnerMenu partnerMenu;
+    private ContractMenu contractMenu;
 
     public Menu (){
         this.scanner = new Scanner(System.in);
@@ -20,6 +26,10 @@ public class Menu implements MenuI{
             PartnerRepositoryI partnerRepository = new PartnerRepository();
             PartnerServiceI partnerService = new PartnerService(partnerRepository);
             this.partnerMenu = new PartnerMenu(partnerService);
+
+            ContractRepositoryI contractRepository = new ContractRepository();
+            ContractServiceI contractService = new ContractService(contractRepository , partnerRepository);
+            this.contractMenu = new ContractMenu(contractService);
         }
         catch(SQLException e){
             e.printStackTrace();
@@ -68,7 +78,7 @@ public class Menu implements MenuI{
                 partnerMenu.startMenu();
                 break;
             case 2:
-                System.out.println("here show contracts menu");
+                contractMenu.startMenu();
                 break;    
             case 3:
                 System.out.println("here show tickets menu");
