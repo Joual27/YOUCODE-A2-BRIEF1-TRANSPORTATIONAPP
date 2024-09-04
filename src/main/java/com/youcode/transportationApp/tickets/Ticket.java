@@ -13,7 +13,7 @@ public class Ticket {
     private double sellingPrice;
     private Timestamp soldAt;
     private TicketStatus ticketStatus;
-    private Contract belongsToContract;
+    private Contract contract;
 
 
     public Ticket(){};
@@ -67,11 +67,11 @@ public class Ticket {
     }
 
     public Contract getContract(){
-        return this.belongsToContract;
+        return this.contract;
     }
 
     public void setContract(Contract contract){
-        this.belongsToContract = contract;
+        this.contract = contract;
     }
 
 }

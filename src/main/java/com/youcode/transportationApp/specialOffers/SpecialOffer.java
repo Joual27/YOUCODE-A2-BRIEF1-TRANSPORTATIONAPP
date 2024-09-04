@@ -1,6 +1,7 @@
 package com.youcode.transportationApp.specialOffers;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 import com.youcode.transportationApp.contracts.Contract;
 import com.youcode.transportationApp.enums.DiscountType;
@@ -10,8 +11,8 @@ public class SpecialOffer {
     private String offerId;
     private String offerName;
     private String offerDescription;
-    private Timestamp startingDate;
-    private Timestamp endDate;
+    private LocalDate startingDate;
+    private LocalDate endDate;
     private DiscountType discountType;
     private double discountValue;
     private String conditions;
@@ -19,6 +20,7 @@ public class SpecialOffer {
     private Contract belongsToContract;
     
 
+    public SpecialOffer (){}
     
     public String getOfferId() {
         return offerId;
@@ -44,19 +46,19 @@ public class SpecialOffer {
         this.offerDescription = offerDescription;
     }
 
-    public Timestamp getStartingDate() {
+    public LocalDate getStartingDate() {
         return startingDate;
     }
 
-    public void setStartingDate(Timestamp startingDate) {
+    public void setStartingDate(LocalDate startingDate) {
         this.startingDate = startingDate;
     }
 
-    public Timestamp getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Timestamp endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

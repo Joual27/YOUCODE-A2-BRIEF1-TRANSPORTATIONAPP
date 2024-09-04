@@ -33,7 +33,7 @@ public class Contract {
             this.renewable = renewable;
             this.contractStatus = contractStatus;
             this.partner = partner;
-        }
+    }
 
     public String getContractId() {
         return contractId;

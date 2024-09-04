@@ -1,6 +1,17 @@
 package com.youcode.transportationApp.tickets.interfaces;
 
-public interface TicketServiceI {
-    public void createTicket();
+import com.youcode.transportationApp.enums.TransportationType;
+import java.sql.SQLException;;
 
+public interface TicketServiceI {
+
+    public void fetchAllTickets() throws SQLException;
+
+    public void createTicket() throws SQLException;
+
+    public String getContractIdFromAvailableContracts(TransportationType ticketTransportationType);
+
+    public void updateTicket() throws SQLException;
+
+    public void deleteTicket() throws SQLException;
 }

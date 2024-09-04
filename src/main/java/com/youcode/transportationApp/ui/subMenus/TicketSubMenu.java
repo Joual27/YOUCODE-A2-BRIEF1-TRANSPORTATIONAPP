@@ -1,29 +1,29 @@
 package com.youcode.transportationApp.ui.subMenus;
 
-import com.youcode.transportationApp.contracts.interfaces.ContractServiceI;
+
+import com.youcode.transportationApp.tickets.interfaces.TicketServiceI;
 import com.youcode.transportationApp.ui.MenuI;
 
 import java.sql.SQLException;
 import java.util.Scanner;
 
-public class ContractMenu implements MenuI{
-    
+public class TicketSubMenu implements MenuI{
     private Scanner sc;
-    private final ContractServiceI contractService;
+    private final TicketServiceI ticketService;
 
-    public ContractMenu(ContractServiceI contractService){
+    public TicketSubMenu(TicketServiceI ticketService){
         sc = new Scanner(System.in);
-        this.contractService = contractService;
+        this.ticketService = ticketService;
     }
 
 
     @Override
     public void displayMenu(){
-        System.out.println("========= Handle Contracts =========");
-        System.out.println("1. Fetch All Contracts");
-        System.out.println("2. Add Contract");
-        System.out.println("3. Update Contract Data");
-        System.out.println("4. delete Contract");
+        System.out.println("========= Handle Tickets =========");
+        System.out.println("1. Fetch All Tickets");
+        System.out.println("2. Add Ticket");
+        System.out.println("3. Update Ticket Data");
+        System.out.println("4. delete Ticket");
         System.out.println("5. Back to main menu");
     }
 
@@ -54,24 +54,34 @@ public class ContractMenu implements MenuI{
     public void handleChoice(int choice){
         switch (choice) {
             case 1:
-                contractService.fetchAllContracts();
-                break;
-            case 2 :
-                try{
-                    contractService.addContract();  
-                }      
-                catch(SQLException e){
+                try {
+                    ticketService.fetchAllTickets();
+                    break;
+                } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                break;
+            case 2 :
+                try {
+                    ticketService.createTicket();
+                    break; 
+                } catch (SQLException e) {
+                   e.printStackTrace();
+                }  
             case 3:
                 try {
-                    contractService.updateContract();    
-                    
+                    ticketService.updateTicket();
+                    break;
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
             case 4:
-                contractService.deleteContract();    
+                try {
+                    ticketService.deleteTicket();   
+                    break;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             case 5 :
                 return;     
             default:

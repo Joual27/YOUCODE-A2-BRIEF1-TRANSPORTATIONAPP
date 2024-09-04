@@ -11,14 +11,26 @@ import com.youcode.transportationApp.partners.PartnerRepository;
 import com.youcode.transportationApp.partners.PartnerService;
 import com.youcode.transportationApp.partners.interfaces.PartnerRepositoryI;
 import com.youcode.transportationApp.partners.interfaces.PartnerServiceI;
+import com.youcode.transportationApp.specialOffers.SpecialOfferRepository;
+import com.youcode.transportationApp.specialOffers.SpecialOfferService;
+import com.youcode.transportationApp.specialOffers.interfaces.SpecialOfferRepositoryI;
+import com.youcode.transportationApp.specialOffers.interfaces.SpecialOfferServiceI;
+import com.youcode.transportationApp.tickets.TicketRepository;
+import com.youcode.transportationApp.tickets.TicketService;
+import com.youcode.transportationApp.tickets.interfaces.TicketRepositoryI;
+import com.youcode.transportationApp.tickets.interfaces.TicketServiceI;
 import com.youcode.transportationApp.ui.subMenus.ContractMenu;
 import com.youcode.transportationApp.ui.subMenus.PartnerMenu;
+import com.youcode.transportationApp.ui.subMenus.SpecialOfferMenu;
+import com.youcode.transportationApp.ui.subMenus.TicketSubMenu;
 
 public class Menu implements MenuI{
     
     private Scanner scanner;
     private PartnerMenu partnerMenu;
     private ContractMenu contractMenu;
+    private SpecialOfferMenu specialOfferMenu;
+    private TicketSubMenu ticketSubMenu;
 
     public Menu (){
         this.scanner = new Scanner(System.in);
@@ -30,6 +42,17 @@ public class Menu implements MenuI{
             ContractRepositoryI contractRepository = new ContractRepository();
             ContractServiceI contractService = new ContractService(contractRepository , partnerRepository);
             this.contractMenu = new ContractMenu(contractService);
+
+
+            SpecialOfferRepositoryI specialOfferRepository = new SpecialOfferRepository();
+            SpecialOfferServiceI specialOfferService  = new SpecialOfferService(specialOfferRepository);
+            this.specialOfferMenu = new SpecialOfferMenu(specialOfferService);
+
+
+
+            TicketRepositoryI ticketRepository = new TicketRepository();
+            TicketServiceI ticketService = new TicketService(ticketRepository, partnerService);
+            this.ticketSubMenu = new TicketSubMenu(ticketService);
         }
         catch(SQLException e){
             e.printStackTrace();
@@ -81,10 +104,10 @@ public class Menu implements MenuI{
                 contractMenu.startMenu();
                 break;    
             case 3:
-                System.out.println("here show tickets menu");
+                ticketSubMenu.startMenu();
                 break;    
             case 4:
-                System.out.println("here show SPecial Offers menu");
+                specialOfferMenu.startMenu();
                 break;
             
             case 5 :

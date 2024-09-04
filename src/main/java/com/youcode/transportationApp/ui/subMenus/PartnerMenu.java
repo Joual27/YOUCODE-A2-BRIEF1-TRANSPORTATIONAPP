@@ -73,6 +73,8 @@ public class PartnerMenu implements MenuI{
             case 4 :
                 partnerService.deletePartner();
                 break;
+            case 5 :
+                return;     
             default:
                 break;
         }

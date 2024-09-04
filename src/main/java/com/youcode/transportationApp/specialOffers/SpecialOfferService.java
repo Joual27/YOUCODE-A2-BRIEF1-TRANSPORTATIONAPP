@@ -2,28 +2,34 @@ package com.youcode.transportationApp.specialOffers;
 
 import com.youcode.transportationApp.enums.DiscountType;
 import com.youcode.transportationApp.enums.OfferStatus;
+import com.youcode.transportationApp.specialOffers.interfaces.SpecialOfferRepositoryI;
+import com.youcode.transportationApp.specialOffers.interfaces.SpecialOfferServiceI;
+import com.youcode.transportationApp.utils.DatesValidator;
 import com.youcode.transportationApp.contracts.Contract;
+import com.youcode.transportationApp.contracts.ContractRepository;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Date;
+
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.InputMismatchException;
+import java.time.LocalDate;
 
 
-public class SpecialOfferService {
+public class SpecialOfferService implements SpecialOfferServiceI{
 
-    private final SpecialOfferRepository specialOfferRepository;
+    private final SpecialOfferRepositoryI specialOfferRepository;
     private final Scanner sc;
+    private final DatesValidator validator;
 
-    public SpecialOfferService(SpecialOfferRepository specialOfferRepository) {
+    public SpecialOfferService(SpecialOfferRepositoryI specialOfferRepository) {
         this.specialOfferRepository = specialOfferRepository;
         this.sc = new Scanner(System.in);
+        validator = new DatesValidator();
     }
 
-    public void fetchAllSpecialOffers() {
+    public void fetchAllSpecialOffers() throws SQLException{
         List<SpecialOffer> offers = specialOfferRepository.getAllSpecialOffers();
 
         if (offers.isEmpty()) {
@@ -53,16 +59,46 @@ public class SpecialOfferService {
         System.out.format("+--------------+----------------------+---------------------------+----------------------+----------------------+-----------------+-----------------+-----------------+----------------------+%n");
     }
 
-    public void addSpecialOffer() {
+    public void addSpecialOffer() throws SQLException{
         System.out.println("Please Provide the Offer Name:");
         String offerName = sc.nextLine();
 
         System.out.println("Please Provide the Offer Description:");
         String offerDescription = sc.nextLine();
 
-        Timestamp startingDate = new Timestamp(new Date().getTime());
-        System.out.println("Please Provide the End Date (format: YYYY-MM-DD HH:MM:SS):");
-        Timestamp endDate = Timestamp.valueOf(sc.nextLine());
+        LocalDate startingDate;
+        while (true) {
+            int startingDateDay = validator.handleDays();
+            int startingDateMonth = validator.handleMonths();
+            int startingDateYear = validator.handleYear();
+
+            startingDate = LocalDate.of(startingDateYear, startingDateMonth, startingDateDay);
+
+            if(!validator.validateStartingDate(startingDate)){
+                System.out.println("Starting Date can't be after currentTime");
+            }
+            else{
+                break;
+            }
+        }
+
+        LocalDate endingDate;
+        System.out.println("PLease provide the contract's Ending date : ");
+
+        while (true) {
+            int EndingDateDay = validator.handleDays();
+            int EndingDateMonth = validator.handleMonths();
+            int EndingDateYear = validator.handleYear();
+
+            endingDate = LocalDate.of(EndingDateYear, EndingDateMonth, EndingDateDay);
+
+            if(!validator.validateEndingDate(startingDate,endingDate)){
+                System.out.println("Ending Date can't be after starting Date");
+            }
+            else{
+                break;
+            }
+        }
 
         DiscountType discountType = handleDiscountType();
 
@@ -74,16 +110,17 @@ public class SpecialOfferService {
         String conditions = sc.nextLine();
 
         OfferStatus offerStatus = handleOfferStatus();
-
+        
+        sc.nextLine();
        
-        Contract contract = getContract();
+        Contract contract = handleContract();
 
         SpecialOffer specialOffer = new SpecialOffer();
         specialOffer.setOfferId(UUID.randomUUID().toString());
         specialOffer.setOfferName(offerName);
         specialOffer.setOfferDescription(offerDescription);
         specialOffer.setStartingDate(startingDate);
-        specialOffer.setEndDate(endDate);
+        specialOffer.setEndDate(endingDate);
         specialOffer.setDiscountType(discountType);
         specialOffer.setDiscountValue(discountValue);
         specialOffer.setConditions(conditions);
@@ -123,26 +160,70 @@ public class SpecialOfferService {
                 offer.setOfferDescription(offerDescription);
             }
 
+            LocalDate startingDate;
             System.out.println("Current Starting Date: " + offer.getStartingDate());
-            System.out.println("Enter new Starting Date (format: YYYY-MM-DD HH:MM:SS) (or press Enter to keep the current):");
+            System.out.println("Press any key to update or press Enter to keep the same Date:");
             String startDateInput = sc.nextLine();
-            if (!startDateInput.trim().isEmpty()) {
-                offer.setStartingDate(Timestamp.valueOf(startDateInput));
+            if (startDateInput.trim().isEmpty()) {
+                startingDate = offer.getStartingDate();
+            } else {
+                while (true) {
+                    int startingDateDay = validator.handleDays();
+                    int startingDateMonth = validator.handleMonths();
+                    int startingDateYear = validator.handleYear();
+                    startingDate = LocalDate.of(startingDateYear, startingDateMonth, startingDateDay);
+                    if (!validator.validateStartingDate(startingDate)) {
+                        System.out.println("Starting Date can't be before the current time.");
+                    } else {
+                        offer.setStartingDate(startingDate);
+                        break;
+                    }
+                }
             }
 
+            offer.setStartingDate(startingDate);
+            
+            LocalDate endingDate;
             System.out.println("Current End Date: " + offer.getEndDate());
-            System.out.println("Enter new End Date (format: YYYY-MM-DD HH:MM:SS) (or press Enter to keep the current):");
+            System.out.println("Press any key to update or press Enter to keep the same Date:");
             String endDateInput = sc.nextLine();
-            if (!endDateInput.trim().isEmpty()) {
-                offer.setEndDate(Timestamp.valueOf(endDateInput));
+            if (endDateInput.trim().isEmpty()) {
+                offer.setEndDate(offer.getEndDate());
+            } else {
+                while (true) {
+                    int endingDateDay = validator.handleDays();
+                    int endingDateMonth = validator.handleMonths();
+                    int endingDateYear = validator.handleYear();
+            
+                    endingDate= LocalDate.of(endingDateYear, endingDateMonth, endingDateDay);
+            
+                    if (!validator.validateEndingDate(startingDate, endingDate)) {
+                        System.out.println("Ending Date can't be before the Starting Date.");
+                    } else {
+                        offer.setEndDate(endingDate);
+                        break;
+                    }
+                }
             }
+            
+
+        
 
             System.out.println("Current Discount Type: " + offer.getDiscountType());
-            System.out.println("Enter new Discount Type (or press Enter to keep the current):");
-            DiscountType discountType = handleDiscountType();
-            if (discountType != null) {
-                offer.setDiscountType(discountType);
+            System.out.println("press any key to update discount type (or press Enter to keep the current):");
+            String userInput = sc.nextLine();
+            if(userInput.trim().isEmpty()){
+                offer.setDiscountType(offer.getDiscountType());
             }
+            else{
+                DiscountType discountType = handleDiscountType();
+                if (discountType != null) {
+                    offer.setDiscountType(discountType);
+                }
+            }
+
+            sc.nextLine();
+         
 
             System.out.println("Current Discount Value: " + offer.getDiscountValue());
             System.out.println("Enter new Discount Value (or press Enter to keep the current):");
@@ -159,16 +240,19 @@ public class SpecialOfferService {
             }
 
             System.out.println("Current Offer Status: " + offer.getOfferStatus());
-            System.out.println("Enter new Offer Status (or press Enter to keep the current):");
-            OfferStatus offerStatus = handleOfferStatus();
-            if (offerStatus != null) {
-                offer.setOfferStatus(offerStatus);
+            System.out.println("press any key to update offer status (or press Enter to keep the current):");
+            
+            String userInput2 = sc.nextLine();
+            if(userInput2.trim().isEmpty()){
+                offer.setOfferStatus(offer.getOfferStatus());
+            }
+            else{
+                OfferStatus offerStatus = handleOfferStatus();
+                if (offerStatus != null) {
+                    offer.setOfferStatus(offerStatus);
+                }
             }
 
-            Contract contract = getContract();
-            if (contract != null) {
-                offer.setContract(contract);
-            }
 
             specialOfferRepository.editSpecialOffer(offer);
             System.out.println("Special Offer " + offer.getOfferName() + " updated successfully.");
@@ -177,7 +261,7 @@ public class SpecialOfferService {
         }
     }
 
-    public void deleteSpecialOffer() {
+    public void deleteSpecialOffer() throws SQLException{
         System.out.println("Please Provide the Offer ID to delete:");
         String offerId = sc.nextLine();
 
@@ -242,13 +326,20 @@ public class SpecialOfferService {
     }
     
 
-    private Contract getContract() {
-        System.out.println("Please Provide the Contract ID:");
-        String contractId = sc.nextLine();
+    private Contract handleContract() throws SQLException{
+        Contract c;
+        while (true) {
+            System.out.println("Please Provide the Contract ID:");
+            String contractId = sc.nextLine();
 
-        Contract contract = new Contract();
-        contract.setContractId(contractId);
+            ContractRepository cr = new ContractRepository();
+            c = cr.getContractById(contractId);
 
-        return contract;
+            if(c != null){
+                break;
+            }
+        }
+
+        return c;
     }
 }

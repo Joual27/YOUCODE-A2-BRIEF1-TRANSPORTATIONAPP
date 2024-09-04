@@ -96,7 +96,7 @@ public class ContractRepository implements ContractRepositoryI{
 
         try (PreparedStatement stmt = cnx.prepareStatement(query)) {
             stmt.setDate(1, java.sql.Date.valueOf(contract.getStartingDate()));
-            stmt.setDate(2, java.sql.Date.valueOf(contract.getEndDate()));
+            stmt.setDate(2, java.sql.Date.valueOf(contract. getEndDate()));
             stmt.setDouble(3, contract.getSpecialRate());
             stmt.setString(4, contract.getAgreementConditions());
             stmt.setBoolean(5, contract.isRenewable());

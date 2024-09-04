@@ -74,6 +74,7 @@ public class SpecialOfferMenu implements MenuI{
             case 3 :
                 try {
                     specialOfferService.updateSpecialOffer();
+                    break;
                 } catch (SQLException e) {
                     e.printStackTrace();
                     System.out.println("An error occurred while updating the partner.");
@@ -85,6 +86,8 @@ public class SpecialOfferMenu implements MenuI{
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            case 5 :
+                return;    
             default:
                 break;
         }

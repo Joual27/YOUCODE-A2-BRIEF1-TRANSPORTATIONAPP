@@ -83,23 +83,23 @@ public class ContractService implements ContractServiceI{
         }
 
 
-        LocalDate endingDate;
-        System.out.println("PLease provide the contract's Ending date : ");
+            LocalDate endingDate;
+            System.out.println("PLease provide the contract's Ending date : ");
 
-        while (true) {
-            int EndingDateDay = validator.handleDays();
-            int EndingDateMonth = validator.handleMonths();
-            int EndingDateYear = validator.handleYear();
+            while (true) {
+                int EndingDateDay = validator.handleDays();
+                int EndingDateMonth = validator.handleMonths();
+                int EndingDateYear = validator.handleYear();
 
-            endingDate = LocalDate.of(EndingDateYear, EndingDateMonth, EndingDateDay);
+                endingDate = LocalDate.of(EndingDateYear, EndingDateMonth, EndingDateDay);
 
-            if(!validator.validateEndingDate(startingDate,endingDate)){
-                System.out.println("Ending Date can't be after starting Date");
+                if(!validator.validateEndingDate(startingDate,endingDate)){
+                    System.out.println("Ending Date can't be after starting Date");
+                }
+                else{
+                    break;
+                }
             }
-            else{
-                break;
-            }
-        }
 
 
         System.out.println("PLease provide the Special Rate of this contract : ");
