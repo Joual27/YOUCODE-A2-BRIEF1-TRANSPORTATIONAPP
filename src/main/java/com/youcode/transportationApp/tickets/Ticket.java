@@ -65,6 +65,15 @@ public class Ticket {
     public void setTicketStatus(TicketStatus ticketStatus) {
         this.ticketStatus = ticketStatus;
     }
+
+    public Contract getContract(){
+        return this.belongsToContract;
+    }
+
+    public void setContract(Contract contract){
+        this.belongsToContract = contract;
+    }
+
 }
 
 

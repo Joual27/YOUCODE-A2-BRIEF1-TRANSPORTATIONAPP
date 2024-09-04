@@ -91,4 +91,14 @@ public class SpecialOffer {
     public void setOfferStatus(OfferStatus offerStatus) {
         this.offerStatus = offerStatus;
     }
+
+
+    public Contract getContract(){
+        return this.belongsToContract;
+    }
+
+
+    public void setContract(Contract c){
+        this.belongsToContract = c;
+    }
 }
