@@ -1,6 +1,6 @@
 package com.youcode.transportationApp.specialOffers;
 
-import java.sql.Timestamp;
+
 import java.time.LocalDate;
 
 import com.youcode.transportationApp.contracts.Contract;

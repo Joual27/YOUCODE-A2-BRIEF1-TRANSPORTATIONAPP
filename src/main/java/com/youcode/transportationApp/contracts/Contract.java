@@ -1,6 +1,5 @@
 package com.youcode.transportationApp.contracts;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.time.LocalDate;
 

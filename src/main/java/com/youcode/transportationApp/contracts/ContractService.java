@@ -3,7 +3,6 @@ package com.youcode.transportationApp.contracts;
 import com.youcode.transportationApp.contracts.interfaces.ContractRepositoryI;
 import com.youcode.transportationApp.contracts.interfaces.ContractServiceI;
 import com.youcode.transportationApp.enums.ContractStatus;
-import com.youcode.transportationApp.enums.PartnershipStatus;
 import com.youcode.transportationApp.partners.Partner;
 import com.youcode.transportationApp.partners.interfaces.PartnerRepositoryI;
 import com.youcode.transportationApp.utils.DatesValidator;

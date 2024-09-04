@@ -251,7 +251,7 @@ public class TicketService implements TicketServiceI{
                     case 3:
                         return TransportationType.AIR;
                     default:
-                        System.out.println("INVALID CHOICE!");
+                        System.out.println("INVALID CHOICE! Please select 0, 1, 2, or 3.");
                 }
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input, please enter a number.");
