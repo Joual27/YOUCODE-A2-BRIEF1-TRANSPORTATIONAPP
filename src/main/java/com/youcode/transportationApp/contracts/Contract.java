@@ -114,5 +114,5 @@ public class Contract {
     public void setPartner(Partner partner){
         this.partner = partner;
     }
-
+    
 }

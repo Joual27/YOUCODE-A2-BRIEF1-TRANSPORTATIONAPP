@@ -16,18 +16,21 @@ CREATE TYPE contract_status as ENUM ('ONGOING' , 'ENDED' , 'SUSPENDED');
 
 CREATE TABLE IF NOT EXISTS contracts (
     contractId VARCHAR(255) PRIMARY KEY,
-    staringDate TIMESTAMP,
-    endDate  TIMESTAMP,
+    startingDate TIMESTAMP,
+    endDate TIMESTAMP,
     specialRate DOUBLE PRECISION,
     agreementConditions VARCHAR(255),
     renewable BOOLEAN,
-    contractStatus contract_status
+    contractStatus contract_status,
+    partnerId VARCHAR(255),
+    FOREIGN KEY (partnerId) REFERENCES partners(partnerId)
 );
+
 
 CREATE TYPE offer_status as ENUM ('ACTIVE' , 'SUSPENDED' , 'EXPIRED');
 CREATE TYPE discount_type as ENUM ('FIX_AMOUNT' , 'PERCENTAGE');
 
-CREATE TABLE IF NOT EXISTS specialoffer (
+CREATE TABLE IF NOT EXISTS specialoffers (
     offerId VARCHAR(255) PRIMARY KEY,
     offerName VARCHAR(255),
     offerDescription TEXT,
@@ -36,7 +39,9 @@ CREATE TABLE IF NOT EXISTS specialoffer (
     discountType VARCHAR(255),
     discountValue DOUBLE PRECISION,
     conditions TEXT,
-    offerStatus offer_status
+    offerStatus offer_status,
+    contractId VARCHAR(255),
+    FOREIGN KEY (contractId) REFERENCES contracts(contractId)
 );
 
 CREATE TYPE ticket_status as ENUM ('SOLD' , 'CANCELLED' , 'PPENDING');
@@ -47,5 +52,7 @@ CREATE TABLE IF NOT EXISTS tickets (
     boughtFor DOUBLE PRECISION,
     sellingPrice DOUBLE PRECISION,
     soldAt TIMESTAMP,
-    ticketStatus ticket_status
-);  
+    ticketStatus ticket_status,
+    contractId VARCHAR(255),
+    FOREIGN KEY (contractId) REFERENCES contracts(contractId)
+);
