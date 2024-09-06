@@ -22,8 +22,12 @@ public class ContractRepository implements ContractRepositoryI{
 
     private Connection cnx;
 
-    public ContractRepository() throws SQLException{
-        cnx = DbConnection.getInstance().getConnection();
+    public ContractRepository(){
+        try {
+            cnx = DbConnection.getInstance().getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public ArrayList<Contract> getAllContracts(){
@@ -107,10 +111,11 @@ public class ContractRepository implements ContractRepositoryI{
     }
 
     @Override
-    public Contract getContractById(String contractId) throws SQLException {
+    public Contract getContractById(String contractId) {
         String query = "SELECT * FROM contracts WHERE contractId = ? AND deleted_at IS NULL";
 
-        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+        try{
+            PreparedStatement stmt = cnx.prepareStatement(query);
             stmt.setString(1, contractId);
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
@@ -129,6 +134,11 @@ public class ContractRepository implements ContractRepositoryI{
                 return null;
             }
         }
+        catch(SQLException e){
+            e.printStackTrace();
+            return null;
+        }
+        
     }
 
 

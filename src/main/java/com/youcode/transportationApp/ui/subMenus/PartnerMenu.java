@@ -2,18 +2,19 @@ package com.youcode.transportationApp.ui.subMenus;
 
 import java.util.Scanner;
 
-import com.youcode.transportationApp.partners.interfaces.PartnerServiceI;
+
 import com.youcode.transportationApp.ui.MenuI;
-import java.sql.SQLException;
+import com.youcode.transportationApp.ui.process.PartnerMenuProcess;
+
+
 
 public class PartnerMenu implements MenuI{
     
     private Scanner scanner;
-    private PartnerServiceI partnerService;
-
-    public PartnerMenu(PartnerServiceI partnerService){
+    private final static PartnerMenuProcess partnerMenuProcess = new PartnerMenuProcess();
+  
+    public PartnerMenu(){
         scanner = new Scanner(System.in);
-        this.partnerService = partnerService;
     }
 
 
@@ -58,20 +59,16 @@ public class PartnerMenu implements MenuI{
     public void handleChoice(int choice){
         switch (choice) {
             case 1:
-                partnerService.fetchAllPartners();
+                partnerMenuProcess.handlePartnersFetching();
                 break;
             case 2:
-                partnerService.addPartner();
+                partnerMenuProcess.handlePartnerCreation();
                 break;
             case 3 :
-                try {
-                    partnerService.updatePartner();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    System.out.println("An error occurred while updating the partner.");
-                }
+                partnerMenuProcess.handlePartnerUpdate();
+            
             case 4 :
-                partnerService.deletePartner();
+                partnerMenuProcess.handlePartnerDeletion();
                 break;
             case 5 :
                 return;     

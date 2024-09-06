@@ -1,19 +1,16 @@
 package com.youcode.transportationApp.ui.subMenus;
 
 
-import com.youcode.transportationApp.tickets.interfaces.TicketServiceI;
 import com.youcode.transportationApp.ui.MenuI;
-
-import java.sql.SQLException;
+import com.youcode.transportationApp.ui.process.TicketMenuProcess;
 import java.util.Scanner;
 
 public class TicketSubMenu implements MenuI{
     private Scanner sc;
-    private final TicketServiceI ticketService;
+    private final static TicketMenuProcess ticketMenuProcess = new TicketMenuProcess();
 
-    public TicketSubMenu(TicketServiceI ticketService){
+    public TicketSubMenu(){
         sc = new Scanner(System.in);
-        this.ticketService = ticketService;
     }
 
 
@@ -54,34 +51,17 @@ public class TicketSubMenu implements MenuI{
     public void handleChoice(int choice){
         switch (choice) {
             case 1:
-                try {
-                    ticketService.fetchAllTickets();
-                    break;
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                ticketMenuProcess.handleFetchingAllTickets();
                 break;
             case 2 :
-                try {
-                    ticketService.createTicket();
-                    break; 
-                } catch (SQLException e) {
-                   e.printStackTrace();
-                }  
+                ticketMenuProcess.handleTicketCreation();
+                break;
             case 3:
-                try {
-                    ticketService.updateTicket();
-                    break;
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                ticketMenuProcess.handleTicketUpdate();
+                break;
             case 4:
-                try {
-                    ticketService.deleteTicket();   
-                    break;
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                ticketMenuProcess.handleTicketDeletion();
+                break;
             case 5 :
                 return;     
             default:

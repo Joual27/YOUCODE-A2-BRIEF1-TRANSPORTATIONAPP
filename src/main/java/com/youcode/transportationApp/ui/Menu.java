@@ -19,6 +19,8 @@ import com.youcode.transportationApp.tickets.TicketRepository;
 import com.youcode.transportationApp.tickets.TicketService;
 import com.youcode.transportationApp.tickets.interfaces.TicketRepositoryI;
 import com.youcode.transportationApp.tickets.interfaces.TicketServiceI;
+import com.youcode.transportationApp.ui.process.PartnerMenuProcess;
+import com.youcode.transportationApp.ui.process.TicketMenuProcess;
 import com.youcode.transportationApp.ui.subMenus.ContractMenu;
 import com.youcode.transportationApp.ui.subMenus.PartnerMenu;
 import com.youcode.transportationApp.ui.subMenus.SpecialOfferMenu;
@@ -34,29 +36,26 @@ public class Menu implements MenuI{
 
     public Menu (){
         this.scanner = new Scanner(System.in);
-        try{
-            PartnerRepositoryI partnerRepository = new PartnerRepository();
-            PartnerServiceI partnerService = new PartnerService(partnerRepository);
-            this.partnerMenu = new PartnerMenu(partnerService);
+        PartnerMenuProcess partnerMenuProcess = new PartnerMenuProcess();
+        this.partnerMenu = new PartnerMenu();
 
-            ContractRepositoryI contractRepository = new ContractRepository();
-            ContractServiceI contractService = new ContractService(contractRepository , partnerRepository);
-            this.contractMenu = new ContractMenu(contractService);
+        TicketMenuProcess ticketMenuProcess = new TicketMenuProcess();
+        this.ticketSubMenu = new TicketSubMenu();
 
-
-            SpecialOfferRepositoryI specialOfferRepository = new SpecialOfferRepository();
-            SpecialOfferServiceI specialOfferService  = new SpecialOfferService(specialOfferRepository);
-            this.specialOfferMenu = new SpecialOfferMenu(specialOfferService);
+            // ContractRepositoryI contractRepository = new ContractRepository();
+            // ContractServiceI contractService = new ContractService(contractRepository , partnerRepository);
+            // this.contractMenu = new ContractMenu(contractService);
 
 
+            // SpecialOfferRepositoryI specialOfferRepository = new SpecialOfferRepository();
+            // SpecialOfferServiceI specialOfferService  = new SpecialOfferService(specialOfferRepository);
+            // this.specialOfferMenu = new SpecialOfferMenu(specialOfferService);
 
-            TicketRepositoryI ticketRepository = new TicketRepository();
-            TicketServiceI ticketService = new TicketService(ticketRepository, partnerService);
-            this.ticketSubMenu = new TicketSubMenu(ticketService);
-        }
-        catch(SQLException e){
-            e.printStackTrace();
-        }
+
+
+            // TicketRepositoryI ticketRepository = new TicketRepository();
+            // TicketServiceI ticketService = new TicketService(ticketRepository, partnerService);
+            // this.ticketSubMenu = new TicketSubMenu(ticketService);
     }
 
 
@@ -127,7 +126,5 @@ public class Menu implements MenuI{
             handleChoice(choice);     
         }while(choice != 5);
     }
-
-
     
 }

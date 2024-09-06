@@ -1,17 +1,28 @@
 package com.youcode.transportationApp.tickets.interfaces;
 
-import com.youcode.transportationApp.enums.TransportationType;
-import java.sql.SQLException;;
+import com.youcode.transportationApp.contracts.ValidContractDTO;
+
+import com.youcode.transportationApp.specialOffers.SpecialOffer;
+import com.youcode.transportationApp.tickets.Ticket;
+
+import java.util.List;
 
 public interface TicketServiceI {
 
-    public void fetchAllTickets() throws SQLException;
+    public List<Ticket> getAllTickets() ;
 
-    public void createTicket() throws SQLException;
+    public Ticket createTicket(Ticket t);
 
-    public String getContractIdFromAvailableContracts(TransportationType ticketTransportationType);
+    public Ticket updateTicket(Ticket t) ;
 
-    public void updateTicket() throws SQLException;
+    public Ticket deleteTicket(String ticketId);
 
-    public void deleteTicket() throws SQLException;
+    public Ticket getTicketById(String ticketId);
+
+    public double calculatePriceAfterSpecialRate(double initialPrice, String contractId);
+
+    public boolean isValidContractId(String contractId , List<ValidContractDTO> validcontracts);
+
+    public Double calculatePriceAfterSpecialOffer(SpecialOffer s , Double price);
+    
 }

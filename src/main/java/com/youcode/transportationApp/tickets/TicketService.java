@@ -1,5 +1,6 @@
 package com.youcode.transportationApp.tickets;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -25,150 +26,41 @@ public class TicketService implements TicketServiceI{
     
     private final Scanner sc;
     private final TicketRepositoryI ticketRepository;
-    private final PartnerServiceI partnerService;
+    
 
 
-    public TicketService(TicketRepositoryI ticketRepository , PartnerServiceI partnerService){
+    public TicketService(TicketRepositoryI ticketRepository ){
        this.ticketRepository = ticketRepository;
-       this.partnerService = partnerService;
        this.sc = new Scanner(System.in);
     }
 
 
     @Override
-    public void fetchAllTickets() throws SQLException{
-        ArrayList<Ticket> tickets = ticketRepository.getAllTickets();
-
-        if (tickets.isEmpty()) {
-            System.out.println("No available tickets");
-            return;
+    public List<Ticket> getAllTickets(){
+        List<Ticket> tickets = ticketRepository.getAllTickets();
+        if(tickets.isEmpty()){
+            return null;
         }
-    
-        String leftAlignFormat = "| %-36s | %-25s | %-15s | %-15s | %-20s |%n";
-    
-        System.out.format("+--------------------------------------+---------------------------+-----------------+-----------------+----------------------+%n");
-        System.out.format("| Ticket ID                            | Bought for                | Selling Price   | Ticket Status   | Transportation Type  |");
-        System.out.format("+--------------------------------------+---------------------------+-----------------+-----------------+----------------------+%n");
-    
-        for (Ticket ticket : tickets) {
-            System.out.format(leftAlignFormat,
-                    ticket.getTicketId(), 
-                    ticket.getBoughtFor(), 
-                    String.format("$%.2f", ticket.getSellingPrice()), 
-                    ticket.getTicketStatus(), // 
-                    ticket.getTransportationType()
-            );   
-                    
-        }
-    
-        System.out.format("+--------------------------------------+---------------------------+-----------------+-----------------+----------------------+-----------------+%n");
+        return tickets;
     }
     
 
 
     @Override
-    public void createTicket() throws SQLException{
-      
-        System.out.println("Give the tickets transportation Type");
-        TransportationType ticketTransportationType =  partnerService.handleTransportationType();
-        String targetContractId = getContractIdFromAvailableContracts(ticketTransportationType);
-        System.out.println("PLease enter the company's price of this ticket (without special rate)");
-        double initialPrice = sc.nextDouble();
-        sc.nextLine();
+    public Ticket createTicket(Ticket t) {
+        ticketRepository.createTicket(t);
+        return t;
+    }
 
+    @Override
+    public double calculatePriceAfterSpecialRate(double initialPrice, String contractId) {
         ContractRepository cr = new ContractRepository();
-        Contract c = cr.getContractById(targetContractId);
+        Contract c = cr.getContractById(contractId);
 
-        double priceAfterSpecialRateAndSpecialOffer = initialPrice - (initialPrice * c.getSpecialRate() / 100);
-
-        System.out.println("There is a special rate for your company of : " + c.getSpecialRate() +  "Which makes your price :" + priceAfterSpecialRateAndSpecialOffer);
-
-        SpecialOfferRepository sr = new SpecialOfferRepository();
-
-        SpecialOffer s = sr.getSpecialOfferByContractId(targetContractId);
-        if(s == null){
-            System.out.println("THere is no available special offer right now linked with that contract");
-        }
-        else{
-            if(s.getDiscountType().equals(DiscountType.PERCENTAGE)){
-                priceAfterSpecialRateAndSpecialOffer = priceAfterSpecialRateAndSpecialOffer - (priceAfterSpecialRateAndSpecialOffer * s.getDiscountValue());
-            }
-            else{
-                priceAfterSpecialRateAndSpecialOffer = priceAfterSpecialRateAndSpecialOffer - s.getDiscountValue();
-            }
-
-            System.out.println("There is a special offer on that contract with type : " + s.getDiscountType() + " and value of : " + s.getDiscountValue() + " which makes your final price : " + priceAfterSpecialRateAndSpecialOffer);
-        }
-
-        System.out.println("Please enter the selling price ");
-        double sellingPrice = sc.nextDouble();
-        sc.nextLine();
-        
-        TicketStatus ticketStatus = handleTicketStatus();
-        
-        System.out.println("How Many tickets of this type you want to add ? ");
-
-        int numberOfTickets = sc.nextInt();
-
-        sc.nextLine();
-        
-        try {
-            for(int i=0 ; i < numberOfTickets ; i++){
-                String ticketId = UUID.randomUUID().toString();
-                
-                Ticket t = new Ticket();
-                t.setTicketId(ticketId);
-                t.setBoughtFor(priceAfterSpecialRateAndSpecialOffer);
-                t.setSellingPrice(sellingPrice);
-                t.setTicketStatus(ticketStatus);
-                t.setTransportationType(ticketTransportationType);
-                Contract contract = new Contract();
-                contract.setContractId(targetContractId);
-                t.setContract(contract);
-                
-                ticketRepository.createTicket(t);
-            }
-             
-            if(numberOfTickets == 1){
-                System.out.println("Ticket created successfully !");
-            }
-            else{
-                System.out.println("Tickets created Successfully !");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-
+        return initialPrice - (initialPrice * c.getSpecialRate() / 100);
     }
 
-    @Override
-    public String getContractIdFromAvailableContracts(TransportationType ticketTransportationType){
-        ArrayList<ValidContractDTO> activeContracts = ticketRepository.getAvailableContracts(ticketTransportationType);
-        String contractId = "";
-        if(activeContracts.isEmpty()){
-            System.out.println("NO available active contracts for this transportation Type , try another one !");
-        }
-
-        else{
-            fetchAllAvailableContracts(activeContracts);
-            while (true) {
-                System.out.println("Please Enter the ID of the contract that this ticket belongs to :");
-                String initialContractId = sc.nextLine();
-                if(isValidContractId(initialContractId, activeContracts)){
-                    contractId = initialContractId;
-                    break;
-                }
-                System.out.println("NO available contract with that id try again !");
-
-            }
-           
-        }
-
-        return contractId;
-
-    }
+  
 
     private void fetchAllAvailableContracts(ArrayList<ValidContractDTO> validContracts) {
         String leftAlignFormat = "| %-36s | %-12s | %-12s | %-20s | %-20s | %-15s |%n";
@@ -194,42 +86,16 @@ public class TicketService implements TicketServiceI{
     
 
 
-    private boolean isValidContractId(String contractId , ArrayList<ValidContractDTO> validcontracts){
+    public boolean isValidContractId(String contractId , List<ValidContractDTO> validcontracts){
         for(ValidContractDTO v : validcontracts){
             if(v.getContract().getContractId().equals(contractId)){
                 return true;
             }
         }
-        return false;
+        return false;   
     }
 
-    private TicketStatus handleTicketStatus() {
-    while (true) {
-        System.out.println("Select Ticket Status:");
-        System.out.println("1. Sold");
-        System.out.println("2. Cancelled");
-        System.out.println("3. Pending");
-
-        try {
-            int choice = sc.nextInt();
-
-            switch (choice) {
-                case 1:
-                    return TicketStatus.SOLD;
-                case 2:
-                    return TicketStatus.CANCELLED;
-                case 3:
-                    return TicketStatus.PENDING;
-                default:
-                    System.out.println("INVALID CHOICE!");
-                    break;
-            }
-        } catch (InputMismatchException e) {
-            System.out.println("Invalid input, please enter a number.");
-            sc.nextLine();  
-        }
-     }
-    }
+   
 
     private TransportationType handleTransportationTypeUpdate(TransportationType currentType) {
         while (true) {
@@ -260,95 +126,37 @@ public class TicketService implements TicketServiceI{
         }
     }
 
-    private TicketStatus handleTicketStatusUpdate(TicketStatus currentTicketStatus) {
-        while (true) {
-            try {
-                System.out.println("Current Ticket Status: " + currentTicketStatus);
-                System.out.println("Enter 0 to keep the current value.");
-                System.out.println("1. Sold\t2. Cancelled\t3. Pending");
-
-                int choice = sc.nextInt();
-                sc.nextLine();
-
-                switch (choice) {
-                    case 0:
-                        return currentTicketStatus;
-                    case 1:
-                        return TicketStatus.SOLD;
-                    case 2:
-                        return TicketStatus.CANCELLED;
-                    case 3:
-                        return TicketStatus.PENDING;
-                    default:
-                        System.out.println("INVALID CHOICE!");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input, please enter a number.");
-                sc.nextLine();
-            }
-        }
+  
+    public Ticket getTicketById(String ticketId){
+        return ticketRepository.getTicketById(ticketId);
     }
 
 
+
     @Override
-    public void updateTicket() throws SQLException {
-        fetchAllTickets();
-        System.out.println("Please enter the id of the ticket you want to update");
-
-        String id = sc.nextLine();
-
-        Ticket existingTicket = ticketRepository.getTicketById(id);
-        if (existingTicket == null) {
-            System.out.println("No ticket available with this ID");
-            return;
-        } else {
-            System.out.println("Updating Ticket " + existingTicket.getTicketId());
-
-            System.out.println("Current Selling Price: " + existingTicket.getSellingPrice());
-            System.out.println("Enter new value or leave blank if you don't want to update!");
-
-            String sellingPriceStr = sc.nextLine();
-            double sellingPrice = sellingPriceStr.isEmpty() ? existingTicket.getSellingPrice() : Double.parseDouble(sellingPriceStr);
-
-            TransportationType transportationType = handleTransportationTypeUpdate(existingTicket.getTransportationType());
-
-            TicketStatus ticketStatus = handleTicketStatusUpdate(existingTicket.getTicketStatus());
-
-            Ticket ticketToUpdate = new Ticket();
-            ticketToUpdate.setTicketId(existingTicket.getTicketId());
-            ticketToUpdate.setSellingPrice(sellingPrice);
-            ticketToUpdate.setTransportationType(transportationType);
-            ticketToUpdate.setTicketStatus(ticketStatus);
-
-            try {
-                ticketRepository.editTicket(ticketToUpdate);
-                System.out.println("Ticket " + ticketToUpdate.getTicketId() + " updated successfully!");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+    public Ticket updateTicket(Ticket t){
+        ticketRepository.editTicket(t);
+        return t;
     }
 
     @Override
-    public void deleteTicket() throws SQLException{
-        fetchAllTickets();
+    public Ticket deleteTicket(String ticketId){
+        ticketRepository.removeTicket(ticketId);
+        Ticket t = getTicketById(ticketId);
+        return t;
+    }
 
-        System.out.println("Please enter the id of the ticket you want to delete");
 
-        String id = sc.nextLine();
-
-        try {
-            Ticket existingTicket = ticketRepository.getTicketById(id);
-            if (existingTicket == null) {
-                System.out.println("No ticket is available with this ID");
-                return;
-            } else {
-                ticketRepository.removeTicket(id);
-                System.out.println("Ticket " + existingTicket.getTicketId() + " deleted successfully!");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    @Override 
+    public Double calculatePriceAfterSpecialOffer(SpecialOffer s , Double price){
+        Double finalPrice = 0.0;
+        if(s.getDiscountType().equals(DiscountType.PERCENTAGE)){
+             finalPrice = price - (price * s.getDiscountValue());
         }
+        else if(s.getDiscountType().equals(DiscountType.FIX_AMOUNT)){
+            finalPrice = price - s.getDiscountValue();
+        }
+        return finalPrice;
     }
 
 }

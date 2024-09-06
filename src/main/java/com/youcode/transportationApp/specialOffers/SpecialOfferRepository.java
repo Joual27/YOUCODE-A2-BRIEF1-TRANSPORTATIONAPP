@@ -16,10 +16,14 @@ import com.youcode.transportationApp.specialOffers.interfaces.SpecialOfferReposi
 
 public class SpecialOfferRepository implements SpecialOfferRepositoryI{
 
-    private final Connection cnx;
+    private Connection cnx;
 
-    public SpecialOfferRepository() throws SQLException {
-        this.cnx = DbConnection.getInstance().getConnection();
+    public SpecialOfferRepository() {
+        try {
+            this.cnx = DbConnection.getInstance().getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<SpecialOffer> getAllSpecialOffers() {
@@ -98,10 +102,11 @@ public class SpecialOfferRepository implements SpecialOfferRepositoryI{
         }
     }
 
-    public SpecialOffer getSpecialOfferById(String offerId) throws SQLException {
+    public SpecialOffer getSpecialOfferById(String offerId){
         String query = "SELECT * FROM specialoffers WHERE offerid = ?";
-
-        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+        
+        try {
+            PreparedStatement stmt = cnx.prepareStatement(query);
             stmt.setString(1, offerId);
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
@@ -132,7 +137,11 @@ public class SpecialOfferRepository implements SpecialOfferRepositoryI{
                 System.out.println("No SpecialOffer with that ID is available");
                 return null;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
+        
     }
 
     public void removeSpecialOffer(String offerId) {
@@ -146,23 +155,26 @@ public class SpecialOfferRepository implements SpecialOfferRepositoryI{
         }
     }
 
-    public SpecialOffer getSpecialOfferByContractId(String contractId) throws SQLException{
+    public SpecialOffer getSpecialOfferByContractId(String contractId){
         String query = "SELECT * FROM specialoffers where startingdate < NOW() and enddate > NOW() and offerstatus = 'ACTIVE' AND deleted_at IS NULL" ;
+        
+        try {
+            PreparedStatement stmt = cnx.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
 
-        try(PreparedStatement stmt = cnx.prepareStatement(query)){
-           ResultSet rs = stmt.executeQuery();
-
-           if(rs.next()){
-              SpecialOffer specialOffer = new SpecialOffer();
-              specialOffer.setOfferName(rs.getString("offername"));
-              specialOffer.setDiscountType(DiscountType.valueOf(rs.getString("discounttype")));
-              specialOffer.setDiscountValue(rs.getDouble("discountvalue"));
-              return specialOffer;
-           }
-           
+            if(rs.next()){
+            SpecialOffer specialOffer = new SpecialOffer();
+            specialOffer.setOfferName(rs.getString("offername"));
+            specialOffer.setDiscountType(DiscountType.valueOf(rs.getString("discounttype")));
+            specialOffer.setDiscountValue(rs.getDouble("discountvalue"));
+            return specialOffer;
+            }
+            
+            return null;
+        } catch (SQLException e) {
+           e.printStackTrace();
            return null;
         }
-        
     }
 
 

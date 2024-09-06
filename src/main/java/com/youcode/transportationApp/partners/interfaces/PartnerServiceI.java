@@ -1,20 +1,20 @@
 package com.youcode.transportationApp.partners.interfaces;
 
-import com.youcode.transportationApp.enums.PartnershipStatus;
-import com.youcode.transportationApp.enums.TransportationType;
-import java.sql.SQLException;
+
+import com.youcode.transportationApp.partners.Partner;
+
+
+import java.util.List;
 
 public interface PartnerServiceI {
 
-    public void fetchAllPartners();
-    public void addPartner();
-    public TransportationType handleTransportationType();
-    public PartnershipStatus handlePartnershipStatus();
-    public void updatePartner() throws SQLException;
-    public TransportationType handleTransportationTypeUpdate(TransportationType currentType);
-    public PartnershipStatus handlePartnershipStatusUpdate(PartnershipStatus currPartnershipStatus);
+    public List<Partner> getAllPartners();
 
-    public void deletePartner();
+    public Partner addPartner(Partner p);
+    
+    public Partner updatePartner(Partner p);
+    
+    public Partner deletePartner(String partnerId);
 
 
 } 

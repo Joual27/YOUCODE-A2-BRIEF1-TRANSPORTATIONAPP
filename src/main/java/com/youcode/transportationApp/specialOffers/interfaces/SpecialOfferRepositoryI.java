@@ -9,7 +9,7 @@ public interface SpecialOfferRepositoryI {
 
     public  List<SpecialOffer> getAllSpecialOffers() throws SQLException;
 
-    public SpecialOffer getSpecialOfferById(String offerId) throws SQLException;    
+    public SpecialOffer getSpecialOfferById(String offerId);    
 
     public void createSpecialOffer(SpecialOffer specialOffer) throws SQLException;
 
@@ -17,5 +17,5 @@ public interface SpecialOfferRepositoryI {
 
     public void removeSpecialOffer(String offerId) throws SQLException;
 
-    public SpecialOffer getSpecialOfferByContractId(String contractId) throws SQLException;
+    public SpecialOffer getSpecialOfferByContractId(String contractId);
 }
