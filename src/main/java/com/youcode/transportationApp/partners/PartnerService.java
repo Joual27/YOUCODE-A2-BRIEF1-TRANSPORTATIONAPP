@@ -5,32 +5,34 @@ import com.youcode.transportationApp.partners.interfaces.PartnerRepositoryI;
 import com.youcode.transportationApp.partners.interfaces.PartnerServiceI;
 
 import java.util.List;
-import java.util.Scanner;
 
 
 public class PartnerService implements PartnerServiceI{
     
     private final PartnerRepositoryI partnerRepository;
-    private Scanner sc;
+ 
 
     public PartnerService(PartnerRepositoryI partnerRepository){
         this.partnerRepository = partnerRepository;
-        sc = new Scanner(System.in);
     }
 
     @Override
     public List<Partner> getAllPartners(){
-        List<Partner> partners = partnerRepository.getAllPartners();
-        if(partners.isEmpty()){
-            return null;
-        }
-        return partners;
+        
+        return partnerRepository.getAllPartners();
+    
     }
 
     @Override
     public Partner addPartner(Partner p){
         partnerRepository.createPartner(p);
         return p;
+    }
+
+    @Override
+
+    public Partner getPartnerById(String partnerId){
+        return partnerRepository.getPartnerById(partnerId);
     }
 
 
@@ -43,11 +45,11 @@ public class PartnerService implements PartnerServiceI{
 
     @Override
     public Partner deletePartner(String partnerId){
+        Partner existingPartner = partnerRepository.getPartnerById(partnerId);
         partnerRepository.removePartner(partnerId);
-        return partnerRepository.getPartnerById(partnerId);
+        return existingPartner;
     }
-
-        
+ 
 
 }
 

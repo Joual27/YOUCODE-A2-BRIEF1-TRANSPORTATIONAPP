@@ -1,26 +1,8 @@
 package com.youcode.transportationApp.ui;
 
-import java.sql.SQLException;
 import java.util.Scanner;
 
-import com.youcode.transportationApp.contracts.interfaces.ContractRepositoryI;
-import com.youcode.transportationApp.contracts.interfaces.ContractServiceI;
-import com.youcode.transportationApp.contracts.ContractRepository;
-import com.youcode.transportationApp.contracts.ContractService;
-import com.youcode.transportationApp.partners.PartnerRepository;
-import com.youcode.transportationApp.partners.PartnerService;
-import com.youcode.transportationApp.partners.interfaces.PartnerRepositoryI;
-import com.youcode.transportationApp.partners.interfaces.PartnerServiceI;
-import com.youcode.transportationApp.specialOffers.SpecialOfferRepository;
-import com.youcode.transportationApp.specialOffers.SpecialOfferService;
-import com.youcode.transportationApp.specialOffers.interfaces.SpecialOfferRepositoryI;
-import com.youcode.transportationApp.specialOffers.interfaces.SpecialOfferServiceI;
-import com.youcode.transportationApp.tickets.TicketRepository;
-import com.youcode.transportationApp.tickets.TicketService;
-import com.youcode.transportationApp.tickets.interfaces.TicketRepositoryI;
-import com.youcode.transportationApp.tickets.interfaces.TicketServiceI;
-import com.youcode.transportationApp.ui.process.PartnerMenuProcess;
-import com.youcode.transportationApp.ui.process.TicketMenuProcess;
+
 import com.youcode.transportationApp.ui.subMenus.ContractMenu;
 import com.youcode.transportationApp.ui.subMenus.PartnerMenu;
 import com.youcode.transportationApp.ui.subMenus.SpecialOfferMenu;
@@ -36,26 +18,9 @@ public class Menu implements MenuI{
 
     public Menu (){
         this.scanner = new Scanner(System.in);
-        PartnerMenuProcess partnerMenuProcess = new PartnerMenuProcess();
         this.partnerMenu = new PartnerMenu();
-
-        TicketMenuProcess ticketMenuProcess = new TicketMenuProcess();
         this.ticketSubMenu = new TicketSubMenu();
-
-            // ContractRepositoryI contractRepository = new ContractRepository();
-            // ContractServiceI contractService = new ContractService(contractRepository , partnerRepository);
-            // this.contractMenu = new ContractMenu(contractService);
-
-
-            // SpecialOfferRepositoryI specialOfferRepository = new SpecialOfferRepository();
-            // SpecialOfferServiceI specialOfferService  = new SpecialOfferService(specialOfferRepository);
-            // this.specialOfferMenu = new SpecialOfferMenu(specialOfferService);
-
-
-
-            // TicketRepositoryI ticketRepository = new TicketRepository();
-            // TicketServiceI ticketService = new TicketService(ticketRepository, partnerService);
-            // this.ticketSubMenu = new TicketSubMenu(ticketService);
+        this.contractMenu = new ContractMenu();
     }
 
 

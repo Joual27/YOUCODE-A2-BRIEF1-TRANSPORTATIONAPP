@@ -1,21 +1,17 @@
 package com.youcode.transportationApp.contracts.interfaces;
 
-import com.youcode.transportationApp.enums.ContractStatus;
-import java.sql.SQLException;
+import com.youcode.transportationApp.contracts.Contract;
+import java.util.List;
 
 public interface ContractServiceI {
 
-    public void fetchAllContracts();
+    public List<Contract> getAllContracts();
 
-    public void addContract() throws SQLException;
+    public Contract addContract(Contract c);
 
-    public void updateContract() throws SQLException;
+    public Contract updateContract(Contract c);
 
-    public boolean handleRenewable();
-
-    public ContractStatus handleContractStatus();
-
-    public ContractStatus handleContractStatusUpdate(ContractStatus currentStatus);
+    public Contract getContractById(String contractId);
     
-    public void deleteContract();
+    public Contract deleteContract(String contractId);
 }

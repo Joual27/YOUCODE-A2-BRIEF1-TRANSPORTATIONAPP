@@ -16,5 +16,5 @@ public interface PartnerServiceI {
     
     public Partner deletePartner(String partnerId);
 
-
+    public Partner getPartnerById(String partnerId);
 } 

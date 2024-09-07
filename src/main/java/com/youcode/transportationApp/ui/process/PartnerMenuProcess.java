@@ -9,7 +9,6 @@ import com.youcode.transportationApp.partners.interfaces.PartnerRepositoryI;
 import com.youcode.transportationApp.partners.interfaces.PartnerServiceI;
 
 
-import java.sql.SQLException;
 import java.util.List;
 import java.sql.Timestamp;
 import java.util.Date;

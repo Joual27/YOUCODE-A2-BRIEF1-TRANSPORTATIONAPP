@@ -57,7 +57,7 @@ public class TicketRepository implements TicketRepositoryI{
         try {
             String query = "SELECT * from contracts join partners ON contracts.partnerid = partners.partnerid AND contracts.contractstatus = 'ONGOING' AND partners.partnershipstatus = 'ACTIVE' AND partners.transportationtype = ? AND partners.deleted_at IS NULL";
             PreparedStatement stmt = cnx.prepareStatement(query);
-            stmt.setObject(1, transportationType , java.sql.Types.OTHER);3
+            stmt.setObject(1, transportationType , java.sql.Types.OTHER);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Contract c = new Contract();

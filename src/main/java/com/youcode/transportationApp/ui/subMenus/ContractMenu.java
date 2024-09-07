@@ -1,19 +1,18 @@
 package com.youcode.transportationApp.ui.subMenus;
 
-import com.youcode.transportationApp.contracts.interfaces.ContractServiceI;
 import com.youcode.transportationApp.ui.MenuI;
+import com.youcode.transportationApp.ui.process.ContractMenuProcess;
 
-import java.sql.SQLException;
 import java.util.Scanner;
 
 public class ContractMenu implements MenuI{
     
     private Scanner sc;
-    private final ContractServiceI contractService;
+    private final ContractMenuProcess contractMenuProcess;
 
-    public ContractMenu(ContractServiceI contractService){
+    public ContractMenu(){
         sc = new Scanner(System.in);
-        this.contractService = contractService;
+        this.contractMenuProcess = new ContractMenuProcess();
     }
 
 
@@ -54,24 +53,17 @@ public class ContractMenu implements MenuI{
     public void handleChoice(int choice){
         switch (choice) {
             case 1:
-                contractService.fetchAllContracts();
+                contractMenuProcess.handleFetchingAllContracts();
                 break;
             case 2 :
-                try{
-                    contractService.addContract();  
-                }      
-                catch(SQLException e){
-                    e.printStackTrace();
-                }
+                contractMenuProcess.handleContractCreation();
+                break;
             case 3:
-                try {
-                    contractService.updateContract();    
-                    
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                contractMenuProcess.handleContractUpdate();
+                break;
             case 4:
-                contractService.deleteContract();    
+                contractMenuProcess.handleContractDeletion();
+                break; 
             case 5 :
                 return;     
             default:

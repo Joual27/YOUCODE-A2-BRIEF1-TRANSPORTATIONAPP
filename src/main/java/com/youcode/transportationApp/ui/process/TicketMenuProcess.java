@@ -4,7 +4,7 @@ import java.util.UUID;
 import java.util.InputMismatchException;
 import java.util.List;
 
-import java.sql.SQLException;
+
 
 import com.youcode.transportationApp.contracts.Contract;
 import com.youcode.transportationApp.contracts.ValidContractDTO;

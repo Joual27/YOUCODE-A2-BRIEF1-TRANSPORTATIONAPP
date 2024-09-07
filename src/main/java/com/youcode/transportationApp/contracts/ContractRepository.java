@@ -95,10 +95,11 @@ public class ContractRepository implements ContractRepositoryI{
 
     
     @Override
-    public void editContract(Contract contract) throws SQLException {
+    public void editContract(Contract contract){
         String query = "UPDATE contracts SET startingDate = ?, endDate = ?, specialRate = ?, agreementConditions = ?, renewable = ?, contractStatus = ? WHERE contractId = ?";
 
-        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+        try {
+            PreparedStatement stmt = cnx.prepareStatement(query);
             stmt.setDate(1, java.sql.Date.valueOf(contract.getStartingDate()));
             stmt.setDate(2, java.sql.Date.valueOf(contract. getEndDate()));
             stmt.setDouble(3, contract.getSpecialRate());
@@ -107,7 +108,10 @@ public class ContractRepository implements ContractRepositoryI{
             stmt.setObject(6, contract.getContractStatus().name(), java.sql.Types.OTHER);
             stmt.setString(7, contract.getContractId());
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        
     }
 
     @Override
@@ -143,13 +147,17 @@ public class ContractRepository implements ContractRepositoryI{
 
 
     @Override
-    public void removeContract(String contractId) throws SQLException{
+    public void removeContract(String contractId){
         String query = "UPDATE contracts SET deleted_at = NOW() WHERE contractId = ?";
 
-        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+        try {
+            PreparedStatement stmt = cnx.prepareStatement(query);
             stmt.setString(1, contractId);
             stmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        
     }
 
     
