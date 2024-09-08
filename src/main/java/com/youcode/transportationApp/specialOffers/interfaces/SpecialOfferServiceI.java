@@ -1,14 +1,18 @@
 package com.youcode.transportationApp.specialOffers.interfaces;
 
-import java.sql.SQLException;
+import java.util.List;
+
+import com.youcode.transportationApp.specialOffers.SpecialOffer;
 
 public interface SpecialOfferServiceI {
 
-    public void fetchAllSpecialOffers() throws SQLException;
+    public List<SpecialOffer> getAllSpecialOffers();
     
-    public void addSpecialOffer() throws SQLException;
+    public SpecialOffer addSpecialOffer(SpecialOffer s) ;
 
-    public void updateSpecialOffer() throws SQLException;
+    public SpecialOffer updateSpecialOffer(SpecialOffer s);
 
-    public void deleteSpecialOffer() throws SQLException;
+    public SpecialOffer deleteSpecialOffer(String offerId) ;
+
+    public SpecialOffer getSpecialOfferById(String offerId);
 }

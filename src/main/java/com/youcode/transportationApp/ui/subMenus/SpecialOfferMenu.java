@@ -5,15 +5,16 @@ import java.sql.SQLException;
 
 import com.youcode.transportationApp.specialOffers.interfaces.SpecialOfferServiceI;
 import com.youcode.transportationApp.ui.MenuI;
+import com.youcode.transportationApp.ui.process.SpecialOfferMenuProcess;
 
 public class SpecialOfferMenu implements MenuI{
 
-     private Scanner scanner;
-    private SpecialOfferServiceI specialOfferService;
+    private Scanner scanner;
+    private SpecialOfferMenuProcess specialOfferMenuProcess;
 
-    public SpecialOfferMenu(SpecialOfferServiceI specialOfferService){
+    public SpecialOfferMenu(){
         scanner = new Scanner(System.in);
-        this.specialOfferService = specialOfferService;
+        this.specialOfferMenuProcess = new SpecialOfferMenuProcess();
     }
 
 
@@ -58,34 +59,18 @@ public class SpecialOfferMenu implements MenuI{
     public void handleChoice(int choice){
         switch (choice) {
             case 1:
-               try {
-                    specialOfferService.fetchAllSpecialOffers();
-                    break;
-               } catch (Exception e) {
-                    e.printStackTrace();
-               }
+                specialOfferMenuProcess.handleFetchingAllSpecialOffers();;
+                break;
+               
             case 2:
-                try {
-                    specialOfferService.addSpecialOffer();
-                    break;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                specialOfferMenuProcess.handleSpecialOfferCreation();
+                break;
             case 3 :
-                try {
-                    specialOfferService.updateSpecialOffer();
-                    break;
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    System.out.println("An error occurred while updating the partner.");
-                }
+                specialOfferMenuProcess.handleSpecialOfferUpdate();
+                break;
             case 4 :
-                try {
-                    specialOfferService.deleteSpecialOffer();
-                    break;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                specialOfferMenuProcess.handleSpecialOfferDeletion();
+                break;
             case 5 :
                 return;    
             default:

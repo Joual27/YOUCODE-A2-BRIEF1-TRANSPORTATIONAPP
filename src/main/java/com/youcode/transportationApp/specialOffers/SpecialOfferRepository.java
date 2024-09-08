@@ -29,48 +29,50 @@ public class SpecialOfferRepository implements SpecialOfferRepositoryI{
     public List<SpecialOffer> getAllSpecialOffers() {
         List<SpecialOffer> offers = new ArrayList<>();
         String sqlQuery = "SELECT * FROM specialoffers WHERE deleted_at IS NULL;";
+        try {
+            PreparedStatement stmt = cnx.prepareStatement(sqlQuery);
+            ResultSet resultSet = stmt.executeQuery();
 
-        try (PreparedStatement stmt = cnx.prepareStatement(sqlQuery);
-             ResultSet resultSet = stmt.executeQuery()) {
+           while (resultSet.next()) {
+               SpecialOffer offer = new SpecialOffer();
+               offer.setOfferId(resultSet.getString("offerid"));
+               offer.setOfferName(resultSet.getString("offername"));
+               offer.setOfferDescription(resultSet.getString("offerdescription"));
+               Timestamp startingTimestamp = resultSet.getTimestamp("startingdate");
+               if (startingTimestamp != null) {
+                   offer.setStartingDate(startingTimestamp.toLocalDateTime().toLocalDate());
+               }
+       
+               Timestamp endingTimestamp = resultSet.getTimestamp("enddate");
+               if (endingTimestamp != null) {
+                   offer.setEndDate(endingTimestamp.toLocalDateTime().toLocalDate());
+               }
+       
+               offer.setDiscountType(DiscountType.valueOf(resultSet.getString("discounttype")));
+               offer.setDiscountValue(resultSet.getDouble("discountvalue"));
+               offer.setConditions(resultSet.getString("conditions"));
+               offer.setOfferStatus(OfferStatus.valueOf(resultSet.getString("offerstatus")));
 
-            while (resultSet.next()) {
-                SpecialOffer offer = new SpecialOffer();
-                offer.setOfferId(resultSet.getString("offerid"));
-                offer.setOfferName(resultSet.getString("offername"));
-                offer.setOfferDescription(resultSet.getString("offerdescription"));
-                Timestamp startingTimestamp = resultSet.getTimestamp("startingdate");
-                if (startingTimestamp != null) {
-                    offer.setStartingDate(startingTimestamp.toLocalDateTime().toLocalDate());
-                }
-        
-                Timestamp endingTimestamp = resultSet.getTimestamp("enddate");
-                if (endingTimestamp != null) {
-                    offer.setEndDate(endingTimestamp.toLocalDateTime().toLocalDate());
-                }
-        
-                offer.setDiscountType(DiscountType.valueOf(resultSet.getString("discounttype")));
-                offer.setDiscountValue(resultSet.getDouble("discountvalue"));
-                offer.setConditions(resultSet.getString("conditions"));
-                offer.setOfferStatus(OfferStatus.valueOf(resultSet.getString("offerstatus")));
- 
-                
-                Contract contract = new Contract();
-                contract.setContractId(resultSet.getString("contractid"));
-                offer.setContract(contract);
+               
+               Contract contract = new Contract();
+               contract.setContractId(resultSet.getString("contractid"));
+               offer.setContract(contract);
 
-                offers.add(offer);
-            }
+               offers.add(offer);
+           }
+           return offers;
+       
         } catch (SQLException e) {
-            e.printStackTrace();
+           e.printStackTrace();
+           return null;
         }
-
-        return offers;
     }
 
-    public void createSpecialOffer(SpecialOffer offer) throws SQLException {
+    public void createSpecialOffer(SpecialOffer offer) {
         String query = "INSERT INTO specialoffers (offerid, offername, offerdescription, startingdate, enddate, discounttype, discountvalue, conditions, offerstatus, contractid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+        try {
+            PreparedStatement stmt = cnx.prepareStatement(query);
             stmt.setString(1, offer.getOfferId());
             stmt.setString(2, offer.getOfferName());
             stmt.setString(3, offer.getOfferDescription());
@@ -82,13 +84,17 @@ public class SpecialOfferRepository implements SpecialOfferRepositoryI{
             stmt.setObject(9, offer.getOfferStatus().name(),java.sql.Types.OTHER);
             stmt.setString(10, offer.getContract().getContractId());
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
+    
 
-    public void editSpecialOffer(SpecialOffer offer) throws SQLException {
+    public void editSpecialOffer(SpecialOffer offer){
         String query = "UPDATE specialoffers SET offername = ?, offerdescription = ?, startingdate = ?, enddate = ?, discounttype = ?, discountvalue = ?, conditions = ?, offerstatus = ? WHERE offerid = ?";
 
-        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+       try {
+            PreparedStatement stmt = cnx.prepareStatement(query);
             stmt.setString(1, offer.getOfferName());
             stmt.setString(2, offer.getOfferDescription());
             stmt.setDate(3, java.sql.Date.valueOf(offer.getStartingDate()));
@@ -99,7 +105,10 @@ public class SpecialOfferRepository implements SpecialOfferRepositoryI{
             stmt.setObject(8, offer.getOfferStatus().name(),java.sql.Types.OTHER);
             stmt.setString(9, offer.getOfferId());
             stmt.executeUpdate();
-        }
+       } catch (SQLException e) {
+            e.printStackTrace();
+       }
+        
     }
 
     public SpecialOffer getSpecialOfferById(String offerId){
@@ -147,12 +156,14 @@ public class SpecialOfferRepository implements SpecialOfferRepositoryI{
     public void removeSpecialOffer(String offerId) {
         String query = "UPDATE specialoffers SET deleted_at = NOW() WHERE offerid = ?";
 
-        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+        try {
+            PreparedStatement stmt = cnx.prepareStatement(query);
             stmt.setString(1, offerId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        
     }
 
     public SpecialOffer getSpecialOfferByContractId(String contractId){

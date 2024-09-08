@@ -21,6 +21,7 @@ public class Menu implements MenuI{
         this.partnerMenu = new PartnerMenu();
         this.ticketSubMenu = new TicketSubMenu();
         this.contractMenu = new ContractMenu();
+        this.specialOfferMenu = new SpecialOfferMenu();
     }
 
 
