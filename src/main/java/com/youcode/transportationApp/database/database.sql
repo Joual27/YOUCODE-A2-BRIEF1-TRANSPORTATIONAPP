@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS specialoffers (
     FOREIGN KEY (contractId) REFERENCES contracts(contractId)
 );
 
-CREATE TYPE ticket_status as ENUM ('SOLD' , 'CANCELLED' , 'PPENDING');
+CREATE TYPE ticket_status as ENUM ('SOLD' , 'CANCELLED' , 'PENDING');
 
 CREATE TABLE IF NOT EXISTS tickets (
     ticketId VARCHAR(255) PRIMARY KEY,
@@ -54,5 +54,37 @@ CREATE TABLE IF NOT EXISTS tickets (
     soldAt TIMESTAMP,
     ticketStatus ticket_status,
     contractId VARCHAR(255),
-    FOREIGN KEY (contractId) REFERENCES contracts(contractId)
+    routeid VARCHAR(255),
+    FOREIGN KEY (contractId) REFERENCES contracts(contractId),
+    FOREIGN KEY (routeid) REFERENCES routes(routeid)
 );
+
+
+CREATE TABLE IF NOT EXISTS customers (
+    email VARCHAR(100) PRIMARY KEY NOT NULL,
+    firstName VARCHAR(100),
+    familyName VARCHAR(100),
+    phoneNumber VARCHAR(15)
+)
+
+
+CREATE TABLE IF NOT EXISTS reservations(
+    reservationId VARCHAR(255) NOT NULL PRIMARY KEY,
+    cancelled_at TIMESTAMP,
+    customerEmail VARCHAR(100),
+    FOREIGN KEY(customerEmail) REFERENCES customers(email)
+)
+
+CREATE TABLE IF NOT EXISTS ticketsOfReservation(
+    ticketId VARCHAR(255),
+    reservationId VARCHAR(255),
+    FOREIGN KEY (ticketId) REFERENCES tickets (ticketId),
+    FOREIGN KEY (reservationId) REFERENCES reservations (reservationId),
+    PRIMARY KEY (ticketId , reservationId)
+)
+
+CREATE TABLE IF NOT EXISTS routes(
+    routeId VARCHAR(255) PRIMARY KEY NOT NULL,
+    departure VARCHAR(100) NOT NULL,
+    destination VARCHAR(100) NOT NULL
+)

@@ -1,9 +1,7 @@
 package com.youcode.transportationApp.ui.subMenus;
 
 import java.util.Scanner;
-import java.sql.SQLException;
 
-import com.youcode.transportationApp.specialOffers.interfaces.SpecialOfferServiceI;
 import com.youcode.transportationApp.ui.MenuI;
 import com.youcode.transportationApp.ui.process.SpecialOfferMenuProcess;
 
