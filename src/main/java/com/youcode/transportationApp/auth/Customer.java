@@ -6,7 +6,7 @@ public class Customer {
 
     private String firstName;
 
-    private String lastName;
+    private String familyName;
 
     private String phoneNumber;
 
@@ -25,11 +25,11 @@ public class Customer {
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-    public String getLastName() {
-        return lastName;
+    public String getFamilyName() {
+        return familyName;
     }
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setFamilyName(String familyName) {
+        this.familyName = familyName;
     }
 
     public String getPhoneNumber() {

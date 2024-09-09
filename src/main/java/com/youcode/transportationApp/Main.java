@@ -14,7 +14,7 @@ public class Main{
          DbConnection dbConnection = DbConnection.getInstance();
          Connection cnx = dbConnection.getConnection();
          if( cnx != null && !cnx.isClosed()){
-            System.out.println("Connected to db succesfully !");
+            System.out.println("Connected to db successfully !");
             Menu menu = new Menu();
             menu.startMenu();
          }

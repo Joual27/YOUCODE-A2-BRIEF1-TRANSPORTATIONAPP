@@ -10,7 +10,16 @@ public class AuthService implements AuthServiceI {
     public AuthService() {
         this.authRepository = new AuthRepository();
     }
-    public Customer authenticateCustomer(String email){
-        return authRepository.getUserByEmail(email);
+    public Customer getCustomerByEmail(String email){
+        return authRepository.getCustomerByEmail(email);
+    }
+
+    public Customer createCustomer(Customer customer){
+        return authRepository.createCustomer(customer);
+    }
+
+    public Customer updateCustomer(Customer customer){
+        authRepository.updateCustomer(customer);
+        return customer;
     }
 }

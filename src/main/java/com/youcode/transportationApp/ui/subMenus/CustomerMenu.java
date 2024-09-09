@@ -3,10 +3,13 @@ package com.youcode.transportationApp.ui.subMenus;
 import java.util.Scanner;
 
 import com.youcode.transportationApp.ui.MenuI;
+import com.youcode.transportationApp.ui.process.CustomerMenuProcess;
+import com.youcode.transportationApp.utils.Session;
 
 public class CustomerMenu implements MenuI{
 
     private Scanner scanner;
+    private final static CustomerMenuProcess customerMenuProcess = new CustomerMenuProcess();
 
     public CustomerMenu() {
         this.scanner = new Scanner(System.in);
@@ -47,7 +50,7 @@ public class CustomerMenu implements MenuI{
                 System.out.println("Viewing my reservations...");
                 break;
             case 3:
-                System.out.println("Updating your profile...");
+                customerMenuProcess.handleCustomerProfileUpdate();
                 break;
             case 4:
                 return;

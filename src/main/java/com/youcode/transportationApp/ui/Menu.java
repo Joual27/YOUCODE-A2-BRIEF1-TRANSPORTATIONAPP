@@ -4,12 +4,15 @@ import java.util.Scanner;
 
 
 import com.youcode.transportationApp.auth.AuthService;
+import com.youcode.transportationApp.auth.Customer;
 import com.youcode.transportationApp.auth.interfaces.AuthServiceI;
 import com.youcode.transportationApp.ui.subMenus.ContractMenu;
 import com.youcode.transportationApp.ui.subMenus.CustomerMenu;
 import com.youcode.transportationApp.ui.subMenus.PartnerMenu;
 import com.youcode.transportationApp.ui.subMenus.SpecialOfferMenu;
 import com.youcode.transportationApp.ui.subMenus.TicketSubMenu;
+import com.youcode.transportationApp.utils.Session;
+import com.youcode.transportationApp.utils.Validator;
 
 public class Menu implements MenuI{
     
@@ -20,6 +23,7 @@ public class Menu implements MenuI{
     private final TicketSubMenu ticketSubMenu;
     private final CustomerMenu customerMenu;
     private final AuthServiceI authService;
+
 
     public Menu (){
         this.scanner = new Scanner(System.in);
@@ -74,12 +78,63 @@ public class Menu implements MenuI{
     }
 
     public boolean authenticateCustomer(){
-        System.out.println("Please Provide your email:");
-        String email = scanner.nextLine();
-        if(authService.authenticateCustomer(email) != null ){
-            return true;
+        scanner.nextLine();
+        String email;
+        while (true) {
+            System.out.println("Please provide your email:");
+            email = scanner.nextLine();
+            if (Validator.validateEmail(email)) {
+                break;
+            } else {
+                System.out.println("Invalid email format, please try again!");
+            }
         }
-        return false;
+
+        Customer customer = authService.getCustomerByEmail(email);
+        if (customer != null) {
+            Session.getInstance().setLoggedEmail(email);
+            return true;
+        } else {
+            System.out.println("No account found with this email address.");
+            return false;
+        }
+    }
+
+    public void handleCustomerAccountCreation(){
+        String email;
+        while(true){
+            System.out.println("Enter your email:");
+            email = scanner.nextLine();
+            if(Validator.validateEmail(email)){
+                break;
+            }
+            else{
+                System.out.println("Invalid email format , please try again !");
+            }
+        }
+        System.out.println("Enter your First Name:");
+        String fistName = scanner.nextLine();
+        System.out.println("Enter your Last Name:");
+        String familyName = scanner.nextLine();
+        String phoneNumber;
+        while(true){
+            System.out.println("Enter your phone number:");
+            phoneNumber = scanner.nextLine();
+            if(Validator.validatePhoneNumber(phoneNumber)){
+                break;
+            }
+            else{
+                System.out.println("Phone number must be 10 digits and starts with 05 , 06 or 07");
+            }
+        }
+        Customer newCustomer = new Customer();
+        newCustomer.setEmail(email);
+        newCustomer.setFirstName(fistName);
+        newCustomer.setFamilyName(familyName);
+        newCustomer.setPhoneNumber(phoneNumber);
+        authService.createCustomer(newCustomer);
+        System.out.println("Customer " + fistName + familyName + " created successfully !");
+        Session.getInstance().setLoggedEmail(email);
     }
 
     public void handleCustomerAuthentication(){
@@ -87,7 +142,9 @@ public class Menu implements MenuI{
             customerMenu.startMenu();
         }
         else{
-            System.out.println("Invalid Credentials ! PLease");
+            System.out.println("Invalid Credentials ! PLease create a new account to access the app ");
+            handleCustomerAccountCreation();
+            customerMenu.startMenu();
         }
     }
 
@@ -98,7 +155,7 @@ public class Menu implements MenuI{
         System.out.println("1. Handle Partners");
         System.out.println("2. Handle Contracts");
         System.out.println("3. Handle Tickets");
-        System.out.println("4. Handle Special Offes");
+        System.out.println("4. Handle Special Offers");
         System.out.println("5. Exit");
         System.out.println("=============================");
     }
@@ -169,7 +226,7 @@ public class Menu implements MenuI{
                 }
                 break;
             } else if(starterMenuChoice == 2){
-
+                handleCustomerAuthentication();
                 break;
             }
             else if(starterMenuChoice == 0){
