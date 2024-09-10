@@ -1,10 +1,13 @@
 package com.youcode.transportationApp.tickets;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.youcode.transportationApp.contracts.Contract;
 import com.youcode.transportationApp.enums.TicketStatus;
 import com.youcode.transportationApp.enums.TransportationType;
+import com.youcode.transportationApp.route.Route;
 
 public class Ticket {
     private String ticketId;
@@ -14,6 +17,9 @@ public class Ticket {
     private Timestamp soldAt;
     private TicketStatus ticketStatus;
     private Contract contract;
+    private LocalDateTime departureDate;
+    private int tripDuration;
+    private Route route;
 
 
     public Ticket(){};
@@ -72,6 +78,28 @@ public class Ticket {
 
     public void setContract(Contract contract){
         this.contract = contract;
+    }
+
+    public LocalDateTime getDepartureDate() {
+        return departureDate;
+    }
+    public void setDepartureDate(LocalDateTime departureDate) {
+        this.departureDate = departureDate;
+    }
+    public int getTripDuration() {
+        return tripDuration;
+    }
+
+    public void setTripDuration(int tripDuration) {
+        this.tripDuration = tripDuration;
+    }
+
+    public Route getRoute() {
+        return route;
+    }
+
+    public void setRoute(Route route) {
+        this.route = route;
     }
 
 }

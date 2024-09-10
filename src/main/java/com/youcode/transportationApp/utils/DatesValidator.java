@@ -70,5 +70,35 @@ public class DatesValidator {
         }
         return year;
     }
+
+    public int handleHours(){
+        int hour;
+        while (true) {
+            System.out.println("Please provide the hour:");
+            hour = sc.nextInt();
+            if (hour < 0 || hour > 23) {
+                System.out.println("Hour must be between 0 and 23");
+            }else{
+                break;
+            }
+        }
+        return hour;
+    }
+
+    public int handleMinutes(){
+        int minutes;
+        while (true) {
+            System.out.println("Please provide the minutes:");
+            minutes = sc.nextInt();
+            if (minutes < 0 || minutes > 59) {
+                System.out.println("Minutes must be between 0 and 60");
+            }else{
+                break;
+            }
+        }
+        return minutes;
+    }
+
+
 }
 

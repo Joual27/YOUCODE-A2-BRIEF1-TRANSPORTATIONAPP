@@ -46,8 +46,8 @@ public class TicketService implements TicketServiceI{
     }
 
 
-    public boolean isValidContractId(String contractId , List<ValidContractDTO> validcontracts){
-        for(ValidContractDTO v : validcontracts){
+    public boolean isValidContractId(String contractId , List<ValidContractDTO> validContracts){
+        for(ValidContractDTO v : validContracts){
             if(v.getContract().getContractId().equals(contractId)){
                 return true;
             }

@@ -1,9 +1,12 @@
 package com.youcode.transportationApp.ui.process;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.InputMismatchException;
 import java.util.List;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 import com.youcode.transportationApp.contracts.Contract;
@@ -11,6 +14,9 @@ import com.youcode.transportationApp.contracts.ValidContractDTO;
 import com.youcode.transportationApp.enums.TicketStatus;
 import com.youcode.transportationApp.enums.TransportationType;
 import com.youcode.transportationApp.partners.Partner;
+import com.youcode.transportationApp.route.Route;
+import com.youcode.transportationApp.route.RouteService;
+import com.youcode.transportationApp.route.interfaces.RouteServiceI;
 import com.youcode.transportationApp.specialOffers.SpecialOffer;
 import com.youcode.transportationApp.specialOffers.SpecialOfferRepository;
 import com.youcode.transportationApp.tickets.Ticket;
@@ -18,6 +24,8 @@ import com.youcode.transportationApp.tickets.TicketRepository;
 import com.youcode.transportationApp.tickets.TicketService;
 import com.youcode.transportationApp.tickets.interfaces.TicketRepositoryI;
 import com.youcode.transportationApp.tickets.interfaces.TicketServiceI;
+import com.youcode.transportationApp.utils.DatesValidator;
+import com.youcode.transportationApp.utils.Helper;
 
 public class TicketMenuProcess {
 
@@ -25,8 +33,8 @@ public class TicketMenuProcess {
     private static final Scanner sc = new Scanner(System.in);
    
     private final TicketRepositoryI ticketRepository;
-
     private final TicketServiceI ticketService;
+    private final DatesValidator validator = new DatesValidator();
 
     public TicketMenuProcess(){
        ticketRepository = new TicketRepository();
@@ -34,38 +42,42 @@ public class TicketMenuProcess {
     }
 
 
-    public void handleFetchingAllTickets(){
-        
+    public void handleFetchingAllTickets() {
         List<Ticket> tickets = ticketService.getAllTickets();
 
         if (tickets.isEmpty()) {
             System.out.println("No available tickets");
             return;
         }
-    
-        String leftAlignFormat = "| %-36s | %-25s | %-15s | %-15s | %-20s |%n";
-    
-        System.out.format("+--------------------------------------+---------------------------+-----------------+-----------------+----------------------+%n");
-        System.out.format("| Ticket ID                            | Bought for                | Selling Price   | Ticket Status   | Transportation Type  |");
-        System.out.format("+--------------------------------------+---------------------------+-----------------+-----------------+----------------------+%n");
-    
+
+        String leftAlignFormat = "| %-36s | %-25s | %-15s | %-15s | %-20s | %-20s | %-20s | %-10s | %-20s | %-15s |%n";
+
+        System.out.format("+--------------------------------------+---------------------------+-----------------+-----------------+----------------------+----------------------+----------------------+------------+----------------------+-----------------+%n");
+        System.out.format("| Ticket ID                            | Bought for                | Selling Price   | Ticket Status   | Transportation Type  | Departure            | Destination          | Distance   | Departure Date       | Trip Duration   |%n");
+        System.out.format("+--------------------------------------+---------------------------+-----------------+-----------------+----------------------+----------------------+----------------------+------------+----------------------+-----------------+%n");
+
         for (Ticket ticket : tickets) {
             System.out.format(leftAlignFormat,
-                    ticket.getTicketId(), 
-                    ticket.getBoughtFor(), 
-                    String.format("$%.2f", ticket.getSellingPrice()), 
-                    ticket.getTicketStatus(), // 
-                    ticket.getTransportationType()
-            );   
-                    
+                    ticket.getTicketId(),
+                    ticket.getBoughtFor(),
+                    String.format("$%.2f", ticket.getSellingPrice()),
+                    ticket.getTicketStatus(),
+                    ticket.getTransportationType(),
+                    ticket.getRoute().getDeparture(),
+                    ticket.getRoute().getDestination(),
+                    String.format("%.2f km", ticket.getRoute().getDistance()),
+                    ticket.getDepartureDate().toString(),
+                    Helper.formatTripDuration(ticket.getTripDuration())
+            );
         }
-    
-        System.out.format("+--------------------------------------+---------------------------+-----------------+-----------------+----------------------+-----------------+%n");
+
+        System.out.format("+--------------------------------------+---------------------------+-----------------+-----------------+----------------------+----------------------+----------------------+------------+----------------------+-----------------+%n");
     }
 
 
 
-    public void handleFetchingAllAVailableContracts(TransportationType transportationType){
+
+    public void handleFetchingAllAvailableContracts(TransportationType transportationType){
         List<ValidContractDTO> activeContracts = ticketRepository.getAvailableContracts(transportationType);
         String leftAlignFormat = "| %-36s | %-12s | %-12s | %-20s | %-20s | %-15s |%n";
         System.out.format("+--------------------------------------+--------------+--------------+----------------------+----------------------+-----------------+%n");
@@ -100,7 +112,7 @@ public class TicketMenuProcess {
             System.out.println("NO available active contracts for this transportation Type , try another one !");
         }
         else{
-            handleFetchingAllAVailableContracts(ticketTransportationType);
+            handleFetchingAllAvailableContracts(ticketTransportationType);
             while (true) {
                 System.out.println("Please Enter the ID of the contract that this ticket belongs to :");
                 String initialContractId = sc.nextLine();
@@ -146,15 +158,53 @@ public class TicketMenuProcess {
             }
         }
 
-        TicketStatus ticketStatus = handleTicketStatus();
+        System.out.println("Please provide the ticket's route infos !");
+        System.out.println("Please enter the departure :");
+        String departure = sc.nextLine();
+        System.out.println("Please enter the destination :");
+        String destination = sc.nextLine();
+        Double distance;
+        while (true){
+            System.out.println("Please enter the distance of the route (in KM) :");
+            distance = sc.nextDouble();
+            sc.nextLine();
+            if(distance > 0){
+                break;
+            }
+            else {
+                System.out.println("Distance can't be a negative value !");
+            }
+        }
+
+        RouteServiceI routeService = new RouteService();
+        Route existingRoute = routeService.getRouteByDepartureAndDestination(departure,destination);
+
+        Route ticketRoute = new Route();
+
+        if(existingRoute == null){
+            Route route = new Route();
+            route.setRouteId(UUID.randomUUID().toString());
+            route.setDeparture(departure);
+            route.setDestination(destination);
+            route.setDistance(distance);
+            Route newRoute = routeService.createRoute(route);
+            ticketRoute.setRouteId(newRoute.getRouteId());
+        }
+        else{
+            ticketRoute.setRouteId(existingRoute.getRouteId());
+        }
+
+        LocalDateTime departureDate = handleDepartureDate();
+        int tripDuration = handleTripDuration();
+
         System.out.println("How many tickets of this type do you want to add?");
         int numberOfTickets = sc.nextInt();
         sc.nextLine();
 
-        createTickets(numberOfTickets, finalPrice, sellingPrice, ticketStatus, ticketTransportationType, targetContractId);
+        createTickets(numberOfTickets, finalPrice, sellingPrice,ticketTransportationType, targetContractId , ticketRoute , departureDate, tripDuration);
     }
 
-    private void createTickets(int numberOfTickets, double finalPrice, double sellingPrice, TicketStatus ticketStatus, TransportationType ticketTransportationType, String targetContractId) {
+    private void createTickets(int numberOfTickets, double finalPrice, double sellingPrice, TransportationType ticketTransportationType, String targetContractId , Route r , LocalDateTime departureDate , int tripDuration) {
         try {
             for (int i = 0; i < numberOfTickets; i++) {
                 String ticketId = UUID.randomUUID().toString();
@@ -163,8 +213,10 @@ public class TicketMenuProcess {
                 t.setTicketId(ticketId);
                 t.setBoughtFor(finalPrice);
                 t.setSellingPrice(sellingPrice);
-                t.setTicketStatus(ticketStatus);
                 t.setTransportationType(ticketTransportationType);
+                t.setDepartureDate(departureDate);
+                t.setTripDuration(tripDuration);
+                t.setRoute(r);
 
                 Contract contract = new Contract();
                 contract.setContractId(targetContractId);
@@ -297,5 +349,50 @@ public class TicketMenuProcess {
             }
         }
     }
+
+
+    private LocalDateTime handleDepartureDate(){
+        LocalDateTime departureDate;
+        while(true){
+            int day = validator.handleDays();
+            int month = validator.handleMonths();
+            int year = validator.handleYear();
+            int hour = validator.handleHours();
+            int minutes = validator.handleMinutes();
+            departureDate = LocalDateTime.of(year, month, day, hour, minutes);
+
+            if(departureDate.isAfter(LocalDateTime.now())){
+                break;
+            }
+            else{
+                System.out.println("Departure date can't be after now !");
+            }
+        }
+        return departureDate;
+    }
+
+    public static int handleTripDuration() {
+        Scanner scanner = new Scanner(System.in);
+        String durationPattern = "(\\d{1,2})\\s*h\\s*(\\d{1,2})\\s*mins";
+
+        while (true) {
+            System.out.print("Enter the trip duration in the format 'xx h xx mins': ");
+            String input = scanner.nextLine();
+
+            Pattern pattern = Pattern.compile(durationPattern);
+            Matcher matcher = pattern.matcher(input);
+
+            if (matcher.matches()) {
+                int hours = Integer.parseInt(matcher.group(1));
+                int minutes = Integer.parseInt(matcher.group(2));
+
+                return hours * 60 + minutes;
+            } else {
+                System.out.println("Invalid format. Please enter the duration in the correct format.");
+            }
+        }
+    }
+
+
 
 }
