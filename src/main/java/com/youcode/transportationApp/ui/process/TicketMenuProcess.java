@@ -150,7 +150,6 @@ public class TicketMenuProcess {
             System.out.println("Please enter the selling price:");
             sellingPrice = sc.nextDouble();
             sc.nextLine();
-
             if (sellingPrice > finalPrice) {
                 break;
             } else {

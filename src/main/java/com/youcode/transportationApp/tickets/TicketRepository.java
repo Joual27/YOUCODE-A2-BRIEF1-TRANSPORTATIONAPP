@@ -2,6 +2,7 @@ package com.youcode.transportationApp.tickets;
 
 import java.sql.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,8 @@ import com.youcode.transportationApp.enums.TicketStatus;
 import com.youcode.transportationApp.enums.TransportationType;
 import com.youcode.transportationApp.partners.Partner;
 import com.youcode.transportationApp.route.Route;
+import com.youcode.transportationApp.route.RouteRepository;
+import com.youcode.transportationApp.route.interfaces.RouteRepositoryI;
 import com.youcode.transportationApp.tickets.interfaces.TicketRepositoryI;
 
 public class TicketRepository implements TicketRepositoryI{
@@ -89,7 +92,35 @@ public class TicketRepository implements TicketRepositoryI{
         ArrayList<Ticket> tickets = new ArrayList<Ticket>();
         
         try {
-            String query = " SELECT * FROM tickets JOIN routes ON tickets.routeid = routes.routeid Where deleted_at IS NULL ";
+            String query = "WITH RankedTrips AS (" +
+                    "    SELECT " +
+                    "        ROW_NUMBER() OVER (PARTITION BY routes.departure, routes.destination, tickets.departuredate " +
+                    "                          ORDER BY tickets.departuredate) AS rn, " +
+                    "        tickets.ticketid, " +
+                    "        tickets.boughtfor, " +
+                    "        tickets.sellingprice, " +
+                    "        tickets.soldat, " +
+                    "        tickets.ticketstatus, " +
+                    "        tickets.contractid, " +
+                    "        tickets.transportationtype, " +
+                    "        tickets.deleted_at, " +
+                    "        tickets.routeid, " +
+                    "        tickets.tripduration, " +
+                    "        tickets.departuredate, " +
+                    "        routes.departure, " +
+                    "        routes.destination, " +
+                    "        routes.distance, " +
+                    "        partners.companyname " +
+                    "    FROM " +
+                    "        tickets " +
+                    "    JOIN routes ON tickets.routeid = routes.routeid " +
+                    "    JOIN contracts ON tickets.contractid = contracts.contractid " +
+                    "    JOIN partners ON contracts.partnerid = partners.partnerid " +
+                    "    WHERE tickets.deleted_at IS NULL" +
+                    ")" +
+                    "SELECT * FROM RankedTrips WHERE rn = 1;";
+
+
             PreparedStatement stmt = cnx.prepareStatement(query);
             ResultSet rs= stmt.executeQuery();
             while (rs.next()) {
@@ -101,6 +132,10 @@ public class TicketRepository implements TicketRepositoryI{
                 t.setTransportationType(TransportationType.valueOf(rs.getString("transportationtype")));
                 Contract c  = new Contract();
                 c.setContractId(rs.getString("contractid"));
+
+                Partner p = new Partner();
+                p.setCompanyName(rs.getString("companyName"));
+                c.setPartner(p);
 
                 Route r = new Route();
                 r.setDeparture(rs.getString("departure"));
@@ -128,7 +163,7 @@ public class TicketRepository implements TicketRepositoryI{
 
     @Override
     public Ticket getTicketById(String ticketId){
-        String query = "SELECT * FROM tickets WHERE ticketid = ?";
+        String query = "SELECT * FROM tickets JOIN routes ON tickets.routeid = routes.routeid  WHERE ticketid = ?";
 
         try {
             PreparedStatement stmt = cnx.prepareStatement(query);
@@ -143,6 +178,10 @@ public class TicketRepository implements TicketRepositoryI{
                 ticket.setSellingPrice(res.getDouble("sellingprice"));
                 ticket.setSoldAt(res.getTimestamp("soldat"));
                 ticket.setTicketStatus(TicketStatus.valueOf(res.getString("ticketstatus")));
+                ticket.setDepartureDate(res.getTimestamp("departureDate").toLocalDateTime());
+                ticket.setTripDuration(res.getInt("tripduration"));
+                RouteRepositoryI rr = new RouteRepository();
+                ticket.setRoute(rr.findRouteByDepartureAndDestination(res.getString("departure"), res.getString("destination")));
                 
                 ContractRepository contractRepository = new ContractRepository();
                 ticket.setContract(contractRepository.getContractById(res.getString("contractid")));
@@ -189,6 +228,42 @@ public class TicketRepository implements TicketRepositoryI{
         }
         
     }
+
+    @Override
+    public Ticket getTicketByRouteId(String routeId){
+        String query = "SELECT * FROM tickets JOIN routes ON tickets.routeid = routes.routeid WHERE routeid = ? AND deleted_at IS NULL LIMIT 1";
+        try{
+            PreparedStatement stmt = cnx.prepareStatement(query);
+            stmt.setString(1, routeId);
+            ResultSet res = stmt.executeQuery();
+            if (res.next()) {
+                Ticket ticket = new Ticket();
+                ticket.setTicketId(res.getString("ticketid"));
+                ticket.setTransportationType(TransportationType.valueOf(res.getString("transportationtype")));
+                ticket.setBoughtFor(res.getDouble("boughtfor"));
+                ticket.setSellingPrice(res.getDouble("sellingprice"));
+                ticket.setSoldAt(res.getTimestamp("soldat"));
+                ticket.setTicketStatus(TicketStatus.valueOf(res.getString("ticketstatus")));
+                ticket.setDepartureDate(res.getTimestamp("departureDate").toLocalDateTime());
+                ticket.setTripDuration(res.getInt("tripduration"));
+                RouteRepositoryI rr = new RouteRepository();
+                ticket.setRoute(rr.findRouteByDepartureAndDestination(res.getString("departure"), res.getString("destination")));
+
+                ContractRepository contractRepository = new ContractRepository();
+                ticket.setContract(contractRepository.getContractById(res.getString("contractid")));
+
+                return ticket;
+            }
+            return null;
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+
 
  
 }

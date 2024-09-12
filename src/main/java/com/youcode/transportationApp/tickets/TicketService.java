@@ -1,6 +1,11 @@
 package com.youcode.transportationApp.tickets;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.youcode.transportationApp.enums.DiscountType;
 
@@ -86,6 +91,70 @@ public class TicketService implements TicketServiceI{
             finalPrice = price - s.getDiscountValue();
         }
         return finalPrice;
+    }
+
+    @Override
+    public List<List<Ticket>> searchForAvailableTickets(String departure , String destination , LocalDate departureDate){
+        List<Ticket> allTickets = getAllTickets();
+        List<List<Ticket>> allComposedTickets = new ArrayList<>();
+        getComposedTickets(departure , destination , departureDate.atStartOfDay() , new ArrayList<Ticket>() , allComposedTickets , allTickets);
+
+
+        return allComposedTickets;
+    }
+
+    @Override
+    public void getComposedTickets(String departure, String destination, LocalDateTime departureDate,
+                                   List<Ticket> currentComposedTicket, List<List<Ticket>> allComposedTickets,
+                                   List<Ticket> allTickets) {
+        if (departure.equals(destination)) {
+            allComposedTickets.add(new ArrayList<>(currentComposedTicket));
+            return;
+        }
+
+        List<Ticket> nextLegs = allTickets.stream()
+                .filter(ticket -> ticket.getRoute().getDeparture().equals(departure)
+                        && (isSameDay(ticket.getDepartureDate(), LocalDate.now()) ?
+                        ticket.getDepartureDate().isAfter(LocalDateTime.now()) :
+                        ticket.getDepartureDate().isAfter(departureDate))
+                        )
+                .collect(Collectors.toList());
+
+        for (Ticket nextLeg : nextLegs) {
+            if (!currentComposedTicket.isEmpty()) {
+                Ticket lastLeg = currentComposedTicket.get(currentComposedTicket.size() - 1);
+                long waitingTime = Duration.between(
+                        lastLeg.getDepartureDate().plusMinutes(lastLeg.getTripDuration()),
+                        nextLeg.getDepartureDate()
+                ).toMinutes();
+
+                if (waitingTime >= 300) {
+                    continue;
+                }
+            }
+
+            currentComposedTicket.add(nextLeg);
+            getComposedTickets(nextLeg.getRoute().getDestination(),
+                    destination,
+                    nextLeg.getDepartureDate().plusMinutes(nextLeg.getTripDuration()),
+                    currentComposedTicket,
+                    allComposedTickets,
+                    allTickets);
+            currentComposedTicket.remove(nextLeg);
+        }
+    }
+
+
+    public int calculateTotalDuration(List<Ticket> trip) {
+        return trip.stream().mapToInt(Ticket::getTripDuration).sum();
+    }
+
+    public double calculateTotalDistance(List<Ticket> trip) {
+        return trip.stream().mapToDouble(ticket -> ticket.getRoute().getDistance()).sum();
+    }
+
+    private boolean isSameDay(LocalDateTime departureDate, LocalDate localDate) {
+        return departureDate.toLocalDate().equals(localDate);
     }
 
 }

@@ -4,12 +4,14 @@ import java.util.Scanner;
 
 import com.youcode.transportationApp.ui.MenuI;
 import com.youcode.transportationApp.ui.process.CustomerMenuProcess;
+import com.youcode.transportationApp.ui.process.TicketReservationProcess;
 import com.youcode.transportationApp.utils.Session;
 
 public class CustomerMenu implements MenuI{
 
     private Scanner scanner;
     private final static CustomerMenuProcess customerMenuProcess = new CustomerMenuProcess();
+    private final TicketReservationProcess ticketReservationProcess = new TicketReservationProcess();
 
     public CustomerMenu() {
         this.scanner = new Scanner(System.in);
@@ -44,7 +46,7 @@ public class CustomerMenu implements MenuI{
     public void handleChoice(int choice) {
         switch (choice) {
             case 1:
-                System.out.println("Making a reservation...");
+                ticketReservationProcess.handleTicketSearchingProcess();
                 break;
             case 2:
                 System.out.println("Viewing my reservations...");
