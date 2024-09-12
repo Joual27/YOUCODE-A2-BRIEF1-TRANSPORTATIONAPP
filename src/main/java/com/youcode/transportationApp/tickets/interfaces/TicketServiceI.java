@@ -35,4 +35,6 @@ public interface TicketServiceI {
 
     public double calculateTotalDistance(List<Ticket> trip);
 
+    public void markTicketAsSold(String ticketId);
+
 }

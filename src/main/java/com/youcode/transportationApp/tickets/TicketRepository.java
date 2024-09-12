@@ -51,9 +51,9 @@ public class TicketRepository implements TicketRepositoryI{
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
-        
     }
+
+
 
 
     @Override
@@ -116,7 +116,7 @@ public class TicketRepository implements TicketRepositoryI{
                     "    JOIN routes ON tickets.routeid = routes.routeid " +
                     "    JOIN contracts ON tickets.contractid = contracts.contractid " +
                     "    JOIN partners ON contracts.partnerid = partners.partnerid " +
-                    "    WHERE tickets.deleted_at IS NULL" +
+                    "    WHERE tickets.deleted_at IS NULL AND tickets.soldat IS NULL" +
                     ")" +
                     "SELECT * FROM RankedTrips WHERE rn = 1;";
 
@@ -262,9 +262,16 @@ public class TicketRepository implements TicketRepositoryI{
         }
     }
 
-
-
-
+    public void markTicketAsSold(String ticketId){
+        String query = "UPDATE tickets SET soldat = NOW() WHERE ticketid = ?";
+        try{
+            PreparedStatement stmt = cnx.prepareStatement(query);
+            stmt.setString(1, ticketId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
  
 }
     

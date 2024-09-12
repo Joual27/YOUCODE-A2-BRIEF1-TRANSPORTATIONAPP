@@ -157,4 +157,9 @@ public class TicketService implements TicketServiceI{
         return departureDate.toLocalDate().equals(localDate);
     }
 
+    @Override
+    public void markTicketAsSold(String ticketId){
+        ticketRepository.markTicketAsSold(ticketId);
+    }
+
 }

@@ -23,4 +23,6 @@ public interface TicketRepositoryI {
 
     public Ticket getTicketByRouteId(String routeId);
 
+    public void markTicketAsSold(String ticketId);
+
 }
