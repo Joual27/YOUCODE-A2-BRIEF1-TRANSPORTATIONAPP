@@ -73,7 +73,7 @@ public class ContractRepository implements ContractRepositoryI{
         LocalDateTime startingDateTime = startingDate.atStartOfDay();
         Timestamp startingTimestamp = Timestamp.valueOf(startingDateTime);
 
-        LocalDate endingDate = contract.getStartingDate();
+        LocalDate endingDate = contract.getEndDate();
         LocalDateTime endingDateTime = endingDate.atStartOfDay();
         Timestamp endingTimestamp = Timestamp.valueOf(endingDateTime);
 
