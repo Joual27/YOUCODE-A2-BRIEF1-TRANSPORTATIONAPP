@@ -1,7 +1,10 @@
 package com.youcode.transportationApp.ui.process;
 
+import com.youcode.transportationApp.auth.Customer;
 import com.youcode.transportationApp.reservations.Reservation;
 import com.youcode.transportationApp.reservations.ReservationService;
+import com.youcode.transportationApp.searchHistory.SearchHistory;
+import com.youcode.transportationApp.searchHistory.SearchHistoryService;
 import com.youcode.transportationApp.tickets.Ticket;
 import com.youcode.transportationApp.tickets.TicketRepository;
 import com.youcode.transportationApp.tickets.TicketService;
@@ -22,6 +25,7 @@ public class TicketReservationProcess {
     public final TicketServiceI ticketService;
     public final DatesValidator validator = new DatesValidator();
     private final ReservationService reservationService = new ReservationService();
+    private final SearchHistoryService searchHistoryService = new SearchHistoryService();
 
     public TicketReservationProcess() {
         TicketRepositoryI ticketRepository = new TicketRepository();
@@ -31,10 +35,66 @@ public class TicketReservationProcess {
 
 
     public void handleTicketSearchingProcess(){
-        System.out.println("Please enter the departure :");
-        String departure = scanner.nextLine();
-        System.out.println("Please enter the destination :");
-        String destination = scanner.nextLine();
+        String departure = null;
+        String destination = null;
+
+        List<SearchHistory> previousSearches = searchHistoryService.getTop3Searches(Session.getInstance().getLoggedEmail());
+        if (previousSearches != null && !previousSearches.isEmpty()) {
+             System.out.println("Your Most searched Trips :");
+             for (int i = 0; i < previousSearches.size(); i++) {
+                 System.out.format("%d - %s ------> %s \n" , i+1 , previousSearches.get(i).getDeparture() , previousSearches.get(i).getDestination());
+             }
+            int choice;
+             while(true){
+                 System.out.println("Please enter the number of the trip to search or enter 0 to enter custom values : ");
+                 choice = scanner.nextInt();
+                 scanner.nextLine();
+                 if(choice >= 0 && choice <= previousSearches.size()){
+                     if (choice == 0){
+                         System.out.println("Please enter the departure :");
+                         departure = scanner.nextLine();
+                         System.out.println("Please enter the destination :");
+                         destination = scanner.nextLine();
+                     }
+                     else{
+                         departure = previousSearches.get(choice-1).getDeparture();
+                         destination = previousSearches.get(choice-1).getDestination();
+                     }
+                     break;
+                 }
+                 else {
+                     System.out.println("Invalid choice ! try again !");
+                 }
+             }
+
+
+        }
+
+
+        if (departure == null || destination == null) {
+            System.out.println("Please enter the departure :");
+            departure = scanner.nextLine();
+            System.out.println("Please enter the destination :");
+            destination = scanner.nextLine();
+        }
+
+        SearchHistory currentSearchCombination = searchHistoryService.getSearchHistoryElementByDepartureAndDestination(departure,destination,Session.getInstance().getLoggedEmail());
+        if(currentSearchCombination != null){
+            currentSearchCombination.incrementNumberOfOccurrences();
+            searchHistoryService.updateCustomerSearchHistory(currentSearchCombination , Session.getInstance().getLoggedEmail());
+        }
+        else{
+            SearchHistory newSearchHistoryElement = new SearchHistory();
+            newSearchHistoryElement.setDeparture(departure);
+            newSearchHistoryElement.setDestination(destination);
+            Customer c = new Customer();
+            c.setEmail(Session.getInstance().getLoggedEmail());
+            newSearchHistoryElement.setCustomer(c);
+
+            searchHistoryService.saveSearchHistoryElement(newSearchHistoryElement);
+        }
+
+
 
         System.out.println("Please enter your travel date ! ");
         int day = validator.handleDays();
@@ -45,7 +105,6 @@ public class TicketReservationProcess {
         List<List<Ticket>> allComposedTickets = ticketService.searchForAvailableTickets(departure, destination, departureDate);
         handleFetchingSearchResults(allComposedTickets);
     }
-
 
     public void handleFetchingSearchResults(List<List<Ticket>> allComposedTickets) {
         List<String> searchResults = new ArrayList<>();
@@ -116,7 +175,7 @@ public class TicketReservationProcess {
             else{
                 List<Ticket> chosenTrip = allComposedTickets.get(tripNumber-1);
                 Reservation createdReservation = reservationService.makeReservation(chosenTrip);
-                System.out.println("Reservation on trip " + createdReservation.getSubTickets().getFirst().getRoute().getDeparture() + " - " + createdReservation.getSubTickets().getFirst().getRoute().getDestination() + "Made Successfully !");
+                System.out.println("Reservation on trip " + createdReservation.getSubTickets().getFirst().getRoute().getDeparture() + " - " + createdReservation.getSubTickets().getLast().getRoute().getDestination() + " Made Successfully !");
             }
         }
     }
@@ -163,6 +222,7 @@ public class TicketReservationProcess {
         reservationService.cancelReservation(reservationId);
         System.out.println("Reservation " + reservationId +"cancelled successfully !" );
     }
+
 
 
 
