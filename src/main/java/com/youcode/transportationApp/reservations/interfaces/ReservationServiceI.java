@@ -9,4 +9,7 @@ public interface ReservationServiceI {
 
     public Reservation makeReservation(List<Ticket> tickets);
 
+    public List<Reservation> getAllReservationsOfCustomer(String customerEmail);
+
+    public void cancelReservation(String reservationId);
 }

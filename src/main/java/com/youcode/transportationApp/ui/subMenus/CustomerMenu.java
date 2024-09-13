@@ -21,8 +21,9 @@ public class CustomerMenu implements MenuI{
         System.out.println("========= Customer Menu =========");
         System.out.println("1. Make a Reservation");
         System.out.println("2. View My Reservations");
-        System.out.println("3. Update My Profile");
-        System.out.println("4. Exit");
+        System.out.println("3. Cancel a Reservation");
+        System.out.println("4. Update My Profile");
+        System.out.println("5. Exit");
         System.out.println("=============================");
     }
 
@@ -49,12 +50,16 @@ public class CustomerMenu implements MenuI{
                 ticketReservationProcess.handleTicketSearchingProcess();
                 break;
             case 2:
-                System.out.println("Viewing my reservations...");
+                ticketReservationProcess.handleFetchingCustomerReservations();
                 break;
             case 3:
-                customerMenuProcess.handleCustomerProfileUpdate();
+                ticketReservationProcess.handleReservationCancellation();
                 break;
             case 4:
+                customerMenuProcess.handleCustomerProfileUpdate();
+                break;
+
+            case 5:
                 return;
             default:
                 break;

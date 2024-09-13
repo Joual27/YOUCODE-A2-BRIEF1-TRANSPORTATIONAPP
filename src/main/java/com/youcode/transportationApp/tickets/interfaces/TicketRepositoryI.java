@@ -25,4 +25,7 @@ public interface TicketRepositoryI {
 
     public void markTicketAsSold(String ticketId);
 
+    public void markTicketAsUnsold(String ticketId);
+
+
 }

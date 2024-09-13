@@ -10,9 +10,12 @@ public interface ReservationRepositoryI {
     public void saveReservation(Reservation reservation);
     public void saveReservationTickets(Reservation r);
     public List<Reservation> getAllReservationsOfCustomer(String customerEmail);
-
     public List<Ticket> getAllTicketsOfReservation(String reservationId);
+
+    public void cancelReservation(String reservationId);
+
 
 
 
 }
+

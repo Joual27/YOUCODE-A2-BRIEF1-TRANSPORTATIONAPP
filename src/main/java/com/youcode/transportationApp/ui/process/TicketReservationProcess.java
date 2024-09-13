@@ -8,6 +8,7 @@ import com.youcode.transportationApp.tickets.TicketService;
 import com.youcode.transportationApp.tickets.interfaces.TicketRepositoryI;
 import com.youcode.transportationApp.tickets.interfaces.TicketServiceI;
 import com.youcode.transportationApp.utils.DatesValidator;
+import com.youcode.transportationApp.utils.Session;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -119,4 +120,51 @@ public class TicketReservationProcess {
             }
         }
     }
+
+    public void handleFetchingCustomerReservations() {
+        String customerEmail = Session.getInstance().getLoggedEmail();
+        System.out.println("All Reservations of: " + customerEmail);
+
+        List<Reservation> reservations = reservationService.getAllReservationsOfCustomer(customerEmail);
+
+        if (reservations == null || reservations.isEmpty()) {
+            System.out.println("No reservations found for this customer.");
+        } else {
+            for (Reservation reservation : reservations) {
+                System.out.println("Reservation ID: " + reservation.getReservationId());
+                System.out.println("Reserved At: " + reservation.getReservedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+
+                if (reservation.getCancelledAt() != null) {
+                    System.out.println("Cancelled At: " + reservation.getCancelledAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+                }
+                else{
+                    System.out.println("Active Reservation");
+                }
+
+                System.out.println("Tickets:");
+                for (Ticket ticket : reservation.getSubTickets()) {
+                    System.out.println("  Route: " + ticket.getRoute().getDeparture() + " ---> " + ticket.getRoute().getDestination());
+                    System.out.println("  Transportation Type: " + ticket.getTransportationType());
+                    System.out.println("  Company: " + ticket.getContract().getPartner().getCompanyName());
+                    System.out.println("  Departure: " + ticket.getDepartureDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+                    System.out.println("  Duration: " + (ticket.getTripDuration() / 60) + " hours " + (ticket.getTripDuration() % 60) + " minutes");
+                    System.out.println("  -----------------------------------");
+                }
+                System.out.println("=========================================");
+            }
+        }
+    }
+
+
+    public void handleReservationCancellation(){
+        System.out.println("Please provide the id of the reservation You want to cancel ");
+        String reservationId = scanner.nextLine();
+
+        reservationService.cancelReservation(reservationId);
+        System.out.println("Reservation " + reservationId +"cancelled successfully !" );
+    }
+
+
+
+
 }

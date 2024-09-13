@@ -272,6 +272,17 @@ public class TicketRepository implements TicketRepositoryI{
             e.printStackTrace();
         }
     }
+
+    public void markTicketAsUnsold(String ticketId){
+        String query = "UPDATE tickets SET soldat = NULL WHERE ticketid = ?";
+        try{
+            PreparedStatement stmt = cnx.prepareStatement(query);
+            stmt.setString(1, ticketId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
  
 }
     

@@ -60,12 +60,19 @@ public class ReservationRepository implements ReservationRepositoryI {
             PreparedStatement stmt = cnx.prepareStatement(query);
             stmt.setString(1, customerEmail);
             ResultSet rs = stmt.executeQuery();
+
+
             while(rs.next()){
+                List<Ticket> subTickets= getAllTicketsOfReservation(rs.getString("reservationid"));
                 Reservation reservation = new Reservation();
                 reservation.setReservationId(rs.getString("reservationid"));
-                reservation.setCancelledAt(rs.getTimestamp("cancelled_at").toLocalDateTime());
-                reservation.setReservedAt(rs.getTimestamp("reserved_at").toLocalDateTime());
-                reservation.setSubTickets(getAllTicketsOfReservation(reservation.getReservationId()));
+                reservation.setCancelledAt(
+                        rs.getTimestamp("cancelled_at") != null ? rs.getTimestamp("cancelled_at").toLocalDateTime() : null
+                );
+                reservation.setReservedAt(
+                        rs.getTimestamp("reserved_at") != null ? rs.getTimestamp("reserved_at").toLocalDateTime() : null
+                );
+                reservation.setSubTickets(subTickets);
                 reservations.add(reservation);
             }
             return reservations;
@@ -78,11 +85,12 @@ public class ReservationRepository implements ReservationRepositoryI {
     @Override
     public List<Ticket> getAllTicketsOfReservation(String reservationId){
         List<Ticket> tickets = new ArrayList<>();
-        String query = "SELECT * FROM ticketsofreservation JOIN tickets ON ticketsofreservation.ticketid = tickets.ticketid " +
-                "JOIN contrcats ON tickets.contractid = contracts.ticketsid" +
-                "JOIN partners ON contracts.partnerid = partners.partnerid" +
-                "JOIN routes ON tickets.routeid = routes.routeid" +
-                "WHERE reservationid = ?";
+        String query = "SELECT * FROM ticketsofreservation JOIN tickets ON ticketsofreservation.ticketid = tickets.ticketid" +
+                "                JOIN contracts ON tickets.contractid = contracts.contractid" +
+                "                JOIN partners ON contracts.partnerid = partners.partnerid" +
+                "                JOIN routes ON tickets.routeid = routes.routeid" +
+                "                JOIN reservations ON reservations.reservationid  = ticketsofreservation.reservationid" +
+                "                WHERE reservations.reservationid =  ?";
         try{
             PreparedStatement stmt = cnx.prepareStatement(query);
             stmt.setString(1, reservationId);
@@ -108,6 +116,20 @@ public class ReservationRepository implements ReservationRepositoryI {
         catch(SQLException e){
             e.printStackTrace();
             return null;
+        }
+
+    }
+
+    @Override
+    public void cancelReservation(String reservationId){
+        String query = "UPDATE reservations SET cancelled_at = NOW() WHERE reservationid = ?";
+        try{
+            PreparedStatement stmt = cnx.prepareStatement(query);
+            stmt.setString(1, reservationId);
+            stmt.executeUpdate();
+        }
+        catch (SQLException e){
+            e.printStackTrace();
         }
     }
 

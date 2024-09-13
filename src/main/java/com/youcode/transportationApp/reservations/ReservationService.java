@@ -45,5 +45,17 @@ public class ReservationService implements ReservationServiceI {
         return reservation;
     }
 
+    public List<Reservation> getAllReservationsOfCustomer(String customerEmail){
+        return reservationRepository.getAllReservationsOfCustomer(customerEmail);
+    }
+
+    public void cancelReservation(String reservationId){
+        reservationRepository.cancelReservation(reservationId);
+        List<Ticket> reservationTickets = reservationRepository.getAllTicketsOfReservation(reservationId);
+
+        for(Ticket ticket : reservationTickets){
+            ticketRepository.markTicketAsUnsold(ticket.getTicketId());
+        }
+    }
 
 }
